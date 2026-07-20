@@ -131,6 +131,22 @@
     .tool-title { font-size: 15px; font-weight: 850; }
     .tool-name-ko { margin-top: 2px; color: #626d77; font-size: 10px; font-weight: 750; }
     .tool-maker { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .card-verification { display: flex; align-items: center; gap: 5px; margin: 11px 0 -3px; padding-top: 9px; border-top: 1px solid #edf0f2; color: var(--muted); font-size: 8px; font-weight: 750; }
+    .card-verification i, .methodology-legend i { width: 6px; height: 6px; border-radius: 50%; background: #a9b3bc; }
+    .card-verification time { margin-left: auto; color: #9ca6af; }
+    .card-verification.verified { color: #17845d; }
+    .card-verification.verified i, .methodology-legend .verified i { background: #22a875; }
+    .card-verification.pending { color: #a66c12; }
+    .card-verification.pending i, .methodology-legend .pending i { background: #e8a338; }
+    .verification-panel { display: grid; grid-template-columns: 1.05fr .85fr 1.2fr; gap: 9px; margin-bottom: 14px; padding: 12px; border: 1px solid #dfe5eb; border-radius: 11px; background: #fbfcfd; }
+    .verification-panel > div { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .verification-icon { display: grid; flex: 0 0 auto; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: #e4f7ef; color: #17845d; font-size: 12px; font-weight: 900; }
+    .verification-panel.pending .verification-icon, .verification-panel.waiting .verification-icon { background: #fff2d8; color: #a66c12; }
+    .verification-panel strong { display: block; color: var(--ink); font-size: 10px; }
+    .verification-panel small { display: block; margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .verification-source { display: block !important; padding-left: 9px; border-left: 1px solid #e3e7eb; }
+    .verification-source a, .verification-source span { display: block; margin-top: 4px; color: var(--blue); font-size: 9px; font-weight: 750; line-height: 1.4; }
+    .methodology-link { color: var(--blue); background: transparent; font-size: 10px; font-weight: 800; }
     .deep-card-badge { display: inline-block; margin-left: 6px; padding: 2px 5px; border-radius: 5px; background: #eeeaff; color: #6155cd; font-size: 8px; font-weight: 850; vertical-align: 1px; }
     .deep-guide-label { display: inline-block; margin-bottom: 10px; padding: 6px 9px; border-radius: 7px; background: #e9f8cf; color: #416319; font-size: 10px; font-weight: 850; }
     .tool-result-example { margin-bottom: 14px; padding: 15px; border: 1px solid #dcd7ff; border-radius: 12px; background: linear-gradient(135deg, #f8f7ff, #f4f8ff); }
@@ -323,6 +339,25 @@
     .insight-banner h3 { margin: 0; font-size: 16px; letter-spacing: -.05em; }
     .insight-banner p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; }
     .insight-btn { padding: 11px 14px; color: #fff; background: var(--navy); border-radius: 10px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .methodology { scroll-margin-top: 20px; padding: 24px; border: 1px solid #dce4e9; border-radius: var(--radius); background: #fff; }
+    .methodology-open { padding: 7px 10px; border-radius: 999px; background: #e9f8cf; color: #416319; font-size: 9px; font-weight: 900; letter-spacing: .05em; }
+    .methodology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .methodology-grid article { padding: 18px; border: 1px solid var(--line); border-radius: 13px; background: #fbfcfd; }
+    .methodology-grid h3 { margin: 0 0 14px; font-size: 14px; }
+    .score-bars { display: grid; gap: 9px; }
+    .score-bars > div { display: grid; grid-template-columns: 82px 1fr 34px; align-items: center; gap: 8px; }
+    .score-bars span, .score-bars strong { font-size: 9px; }
+    .score-bars strong { color: var(--blue); text-align: right; }
+    .score-bars i { overflow: hidden; height: 6px; border-radius: 99px; background: #e9edf1; }
+    .score-bars b { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6d63df, #8d83ff); }
+    .methodology-process ol { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+    .methodology-process li { display: flex; align-items: start; gap: 9px; }
+    .methodology-process li > b { display: grid; flex: 0 0 auto; width: 22px; height: 22px; place-items: center; border-radius: 7px; background: #eeeaff; color: #6155cd; font-size: 9px; }
+    .methodology-process li span { color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .methodology-process li strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 10px; }
+    .methodology-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; color: var(--muted); font-size: 9px; }
+    .methodology-legend > span { display: flex; align-items: center; gap: 5px; }
+    .methodology-legend p { flex: 1; margin: 0; text-align: right; }
     .directory-tools { display: flex; gap: 7px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 2px; }
     .filter-btn { padding: 8px 13px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 99px; font-size: 11px; font-weight: 800; white-space: nowrap; }
     .filter-btn.active, .filter-btn:hover { color: var(--blue); border-color: #bfcaff; background: var(--blue-soft); }
@@ -426,6 +461,11 @@
       .search-wrap { padding-left: 13px; }
       .search-submit { padding: 10px 12px; }
       .advanced-filters { align-items: stretch; padding: 12px; }
+      .verification-panel { grid-template-columns: 1fr; }
+      .verification-source { padding: 8px 0 0; border-top: 1px solid #e3e7eb; border-left: 0; }
+      .methodology { padding: 18px; }
+      .methodology-grid { grid-template-columns: 1fr; }
+      .methodology-legend p { flex-basis: 100%; text-align: left; }
       .tool-fit-grid, .tool-alternatives { grid-template-columns: 1fr; }
       .tool-detail-grid { grid-template-columns: 1fr 1fr; }
       .prompt-box pre { padding: 38px 0 0; }
@@ -489,6 +529,7 @@
       <nav class="side-nav">
         <button class="nav-item" data-scroll="templates"><span class="nav-icon">▤</span>업무 템플릿</button>
         <button class="nav-item" data-scroll="news"><span class="nav-icon">◌</span>AI 뉴스</button>
+        <button class="nav-item" data-scroll="methodology"><span class="nav-icon">✓</span>추천 기준</button>
       </nav>
       <div class="nav-label" style="margin-top:26px">MY SPACE</div>
       <nav class="side-nav">
@@ -513,7 +554,7 @@
                 <button class="hero-action primary" type="button" data-scroll="diagnosis"><span>01</span><strong>1분 AI 진단 시작</strong><small>질문 5개로 추천 AI 3개 찾기</small><b>→</b></button>
                 <button class="hero-action secondary" type="button" data-scroll="popularity"><span>03</span><strong>인기 AI 확인</strong><small>실제 이용 데이터 순위 보기</small><b>→</b></button>
               </div>
-              <div class="hero-proof"><span>✓ AI 32개 비교</span><span>✓ 한국어 이름</span><span>✓ 바로 쓰는 템플릿</span></div>
+              <div class="hero-proof"><span>✓ AI 32개 비교</span><span>✓ 한국어 이름</span><button type="button" data-scroll="methodology">✓ 추천 기준 공개</button></div>
             </div>
             <div class="hero-search-panel">
               <div class="hero-search-number">02</div>
@@ -621,6 +662,33 @@
 
         <section class="section" id="insight">
           <div class="insight-banner"><div><h3>오늘의 인사이트 · AI를 고를 때 성능만 보지 마세요</h3><p>가격, 데이터 보안, 한국어 품질까지 함께 비교해야 진짜 효율이 올라갑니다.</p></div><button class="insight-btn" data-scroll="news">인사이트 읽기 →</button></div>
+        </section>
+
+        <section class="section methodology" id="methodology">
+          <div class="section-heading"><div><h2>추천 기준과 검증 방법</h2><p>왜 이 AI를 추천하는지 계산 방법과 정보 상태를 공개합니다.</p></div><span class="methodology-open">TRANSPARENT SCORE</span></div>
+          <div class="methodology-grid">
+            <article class="methodology-score">
+              <h3>추천 점수는 이렇게 계산해요</h3>
+              <div class="score-bars">
+                <div><span>작업 적합도</span><i><b style="width:40%"></b></i><strong>40%</strong></div>
+                <div><span>결과물 품질</span><i><b style="width:20%"></b></i><strong>20%</strong></div>
+                <div><span>비용 적합도</span><i><b style="width:15%"></b></i><strong>15%</strong></div>
+                <div><span>한국어 품질</span><i><b style="width:10%"></b></i><strong>10%</strong></div>
+                <div><span>데이터 보안</span><i><b style="width:10%"></b></i><strong>10%</strong></div>
+                <div><span>처리 속도</span><i><b style="width:5%"></b></i><strong>5%</strong></div>
+              </div>
+            </article>
+            <article class="methodology-process">
+              <h3>정보는 이렇게 확인해요</h3>
+              <ol>
+                <li><b>1</b><span><strong>공식 출처 우선</strong>도구의 공식 홈페이지와 제품 안내를 먼저 확인합니다.</span></li>
+                <li><b>2</b><span><strong>확인일 표시</strong>현재 접근을 확인한 날짜와 재확인 필요 상태를 구분합니다.</span></li>
+                <li><b>3</b><span><strong>같은 기준으로 비교</strong>가격·한국어·난이도·품질·보안·속도를 구조화합니다.</span></li>
+                <li><b>4</b><span><strong>변경 가능성 안내</strong>결제 전에는 공식 페이지에서 최신 정보를 다시 확인해야 합니다.</span></li>
+              </ol>
+            </article>
+          </div>
+          <div class="methodology-legend"><span class="verified"><i></i>공식 페이지 확인</span><span class="pending"><i></i>재확인 필요</span><span class="waiting"><i></i>정보 검증 대기</span><p>추천 점수는 사용자의 선택을 돕는 참고자료이며 특정 제품의 구매를 보장하지 않습니다.</p></div>
         </section>
 
         <section class="section" id="directory">
