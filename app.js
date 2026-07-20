@@ -159,6 +159,34 @@
     </article>`;
   }
 
+  function diagnosisScore(tool, answers) {
+    const category = tool.categories.includes(answers.goal) ? 35 : 0;
+    const quality = (Number(tool.quality) / 5) * 15;
+    const easeTarget = answers.level === 'beginner' ? 5 : answers.level === 'intermediate' ? 4 : 3;
+    const ease = Math.max(0, 15 - Math.abs(easeTarget - Number(tool.ease)) * 5);
+    let budget = (Number(tool.costFit) / 5) * 15;
+    if (answers.budget === 'free') budget = tool.priceType === 'free' ? 15 : tool.priceType === 'freemium' ? 12 : 2;
+    if (answers.budget === 'any') budget = (Number(tool.quality) / 5) * 15;
+    const korean = Math.max(0, 10 - Math.max(0, Number(answers.korean) - Number(tool.korean)) * 4);
+    const privacy = Math.max(0, 10 - Math.max(0, Number(answers.privacy) - Number(tool.privacy)) * 4);
+    return Math.max(51, Math.min(99, Math.round(category + quality + ease + budget + korean + privacy)));
+  }
+
+  function runDiagnosis(answers) {
+    const levelLabel = answers.level === 'beginner' ? '초보자' : answers.level === 'intermediate' ? '경험자' : '능숙한 사용자';
+    const budgetLabel = answers.budget === 'free' ? '무료 사용' : answers.budget === 'value' ? '가격 대비 효율' : '성능';
+    const ranked = state.tools
+      .map(tool => ({ ...tool, total: diagnosisScore(tool, answers), reason: `${levelLabel}가 시작하기 좋고, ${budgetLabel}·한국어·보안 조건을 함께 반영한 추천입니다.` }))
+      .sort((a, b) => b.total - a.total || b.quality - a.quality)
+      .slice(0, 3);
+    $('#diagnosis-title').textContent = `${ranked[0]?.name || 'AI'}를 가장 먼저 추천해요`;
+    $('#diagnosis-caption').textContent = `${levelLabel} · ${budgetLabel} 기준으로 32개 AI를 비교한 결과예요.`;
+    $('#diagnosis-grid').innerHTML = ranked.map((tool, index) => toolCard(tool, index, true)).join('');
+    $('#diagnosis-result').hidden = false;
+    bindCardActions();
+    setTimeout(() => $('#diagnosis-result').scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+  }
+
   function renderRecommendations(query = state.query) {
     const context = classifyQuery(query);
     const ranked = rankTools(query, context).slice(0, 3);
@@ -554,6 +582,27 @@
     $$('.use-case').forEach(button => button.addEventListener('click', () => { $('#search-input').value = button.dataset.query; $('#recommend-form').requestSubmit(); }));
   }
 
+  function bindDiagnosis() {
+    $('#diagnosis-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const goal = $('#diagnosis-goal').value;
+      if (!goal) { showToast('먼저 필요한 업무를 선택해 주세요.'); $('#diagnosis-goal').focus(); return; }
+      runDiagnosis({
+        goal,
+        level: $('#diagnosis-level').value,
+        budget: $('#diagnosis-budget').value,
+        korean: $('#diagnosis-korean').value,
+        privacy: $('#diagnosis-privacy').value
+      });
+      showToast('조건에 맞는 AI 3개를 찾았어요.');
+    });
+    $('#diagnosis-retry').addEventListener('click', () => {
+      $('#diagnosis-result').hidden = true;
+      $('#diagnosis-goal').focus();
+      $('#diagnosis-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
   function bindFilters() {
     $$('[data-filter]').forEach(button => button.addEventListener('click', () => {
       $$('[data-filter]').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.category = button.dataset.filter; renderDirectory();
@@ -769,6 +818,6 @@
   }
 
   renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderNews();
-  bindNavigation(); bindSearch(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
+  bindNavigation(); bindSearch(); bindDiagnosis(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
   initBackend();
 })();
