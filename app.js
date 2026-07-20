@@ -54,7 +54,26 @@
     element.style.color = isError ? '#bd5a28' : '#17845d';
   }
 
-  function scrollToId(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  function showView(id = 'top') {
+    const homeTargets = new Set(['top', 'diagnosis', 'popularity', 'home-more']);
+    const isHome = homeTargets.has(id);
+    $$('.main-content > section').forEach(section => {
+      const belongsToHome = section.classList.contains('hero') || ['diagnosis', 'popularity', 'home-more'].includes(section.id);
+      const shouldShow = isHome ? belongsToHome : section.id === id;
+      section.classList.toggle('view-hidden', !shouldShow);
+    });
+    document.body.dataset.view = isHome ? 'home' : id;
+    const navButtons = $$('.nav-item, .mobile-nav button');
+    navButtons.forEach(button => button.classList.toggle('active', button.dataset.scroll === (isHome && id === 'top' ? 'top' : id)));
+  }
+
+  function scrollToId(id) {
+    const targetId = id || 'top';
+    showView(targetId);
+    const target = targetId === 'top' ? document.getElementById('top') : document.getElementById(targetId);
+    requestAnimationFrame(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    if (location.hash !== `#${targetId}`) history.pushState(null, '', `#${targetId}`);
+  }
   function saveLocalState() { localStorage.setItem('ai-navigator-saved', JSON.stringify([...state.saved])); }
   function saveLocalPopularity() { localStorage.setItem('ai-navigator-popularity', JSON.stringify(state.localPopularity)); }
   function visitorId() {
@@ -1163,9 +1182,12 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
   }
 
   function bindNavigation() {
-    $$('[data-scroll]').forEach(btn => btn.addEventListener('click', () => scrollToId(btn.dataset.scroll)));
-    const navButtons = $$('.nav-item, .mobile-nav button');
-    navButtons.forEach(button => button.addEventListener('click', () => { navButtons.forEach(item => item.classList.remove('active')); button.classList.add('active'); }));
+    $$('[data-scroll]').forEach(btn => btn.addEventListener('click', event => { event.preventDefault(); scrollToId(btn.dataset.scroll); }));
+    window.addEventListener('popstate', () => {
+      const id = location.hash.slice(1) || 'top';
+      showView(document.getElementById(id) || id === 'top' ? id : 'top');
+      requestAnimationFrame(() => (id === 'top' ? document.getElementById('top') : document.getElementById(id))?.scrollIntoView({ block: 'start' }));
+    });
     $$('[data-toast]').forEach(btn => btn.addEventListener('click', event => { event.preventDefault(); showToast(btn.dataset.toast); }));
   }
 
@@ -1418,6 +1440,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
   }
 
   renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderPopularity(); renderUpdates(); renderNews();
+  showView(location.hash.slice(1) || 'top');
   bindNavigation(); bindSearch(); bindDiagnosis(); bindTemplates(); bindPopularity(); bindUpdates(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
   initBackend();
 })();
