@@ -162,6 +162,22 @@
     .workflow-role { display: block; color: var(--muted); font-size: 12px; line-height: 1.55; }
     .workflow-step:hover { border-color: #9b92ea; transform: translateY(-2px); }
     .workflow-tip { margin: 14px 0 0; color: #59636e; font-size: 12px; line-height: 1.6; }
+    .diagnosis-time { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: #e9f8cf; color: #416319; font-size: 11px; font-weight: 850; }
+    .diagnosis-card { padding: 22px; border: 1px solid #dfe5eb; border-radius: var(--radius); background: linear-gradient(135deg, #fff, #f8faff); }
+    .diagnosis-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .diagnosis-field { display: grid; gap: 8px; min-width: 0; }
+    .diagnosis-field > span { min-height: 30px; color: #4f5b66; font-size: 11px; font-weight: 800; line-height: 1.45; }
+    .diagnosis-field b { display: inline-grid; width: 20px; height: 20px; margin-right: 4px; place-items: center; border-radius: 50%; background: #eeeaff; color: #5b50c7; font-size: 10px; }
+    .diagnosis-field select { width: 100%; min-width: 0; padding: 11px 30px 11px 10px; border: 1px solid #dfe5eb; border-radius: 10px; outline: none; background: #fff; color: var(--ink); font-size: 11px; font-weight: 700; }
+    .diagnosis-field select:focus { border-color: #9eabed; box-shadow: 0 0 0 3px #eef2ff; }
+    .diagnosis-action { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e8ebef; }
+    .diagnosis-action p { margin: 0; color: var(--muted); font-size: 11px; }
+    .diagnosis-submit { padding: 12px 16px; }
+    .diagnosis-result { margin-top: 16px; padding: 22px; border-radius: var(--radius); background: #f4f2ff; }
+    .diagnosis-result[hidden] { display: none; }
+    .diagnosis-result-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .diagnosis-result-heading h3 { margin: 7px 0 5px; font-size: 19px; }
+    .diagnosis-result-heading p { margin: 0; color: var(--muted); font-size: 12px; }
     .saved-heading { align-items: center; }
     .saved-count-badge { flex: 0 0 auto; padding: 8px 12px; border: 1px solid #dcd7ff; border-radius: 999px; background: #f5f3ff; color: #6255c8; font-size: 12px; font-weight: 800; }
     .saved-count-badge strong { font-size: 14px; }
@@ -313,6 +329,10 @@
       .filter-select { width: 100%; min-width: 0; }
       .filter-reset { flex: 1; }
       .filter-result { margin-left: 0; text-align: right; }
+      .diagnosis-grid { grid-template-columns: 1fr 1fr; }
+      .diagnosis-field:first-child { grid-column: 1 / -1; }
+      .diagnosis-action, .diagnosis-result-heading { align-items: stretch; flex-direction: column; }
+      .diagnosis-submit { width: 100%; }
       .workflow-summary { display: block; }
       .workflow-time { display: inline-block; margin-top: 10px; }
       .workflow-steps { grid-template-columns: 1fr; }
@@ -347,6 +367,7 @@
       <div class="nav-label">EXPLORE</div>
       <nav class="side-nav">
         <button class="nav-item active" data-scroll="top"><span class="nav-icon">⌂</span>홈</button>
+        <button class="nav-item" data-scroll="diagnosis"><span class="nav-icon">◎</span>AI 선택 진단</button>
         <button class="nav-item" data-scroll="recommend"><span class="nav-icon">✦</span>AI 추천받기</button>
         <button class="nav-item" data-scroll="directory"><span class="nav-icon">▦</span>AI 도구 탐색</button>
         <button class="nav-item" data-scroll="news"><span class="nav-icon">◌</span>AI 뉴스·인사이트</button>
@@ -375,6 +396,34 @@
               <button class="search-submit" type="submit">추천받기</button>
             </form>
             <div class="quick-searches"><button type="button" class="quick-chip">회의록 정리</button><button type="button" class="quick-chip">이미지 만들기</button><button type="button" class="quick-chip">코딩 오류 해결</button><button type="button" class="quick-chip">시장 조사하기</button></div>
+          </div>
+        </section>
+
+        <section class="section" id="diagnosis">
+          <div class="section-heading"><div><h2>5문항 AI 선택 진단</h2><p>어려운 설명 없이 조건만 고르면 잘 맞는 AI 3개를 찾아드려요.</p></div><span class="diagnosis-time">약 1분</span></div>
+          <form class="diagnosis-card" id="diagnosis-form">
+            <div class="diagnosis-grid">
+              <label class="diagnosis-field"><span><b>1</b> 어떤 일이 필요한가요?</span>
+                <select id="diagnosis-goal" required><option value="">업무 선택</option><option value="writing">글쓰기·문서</option><option value="image">이미지·디자인</option><option value="video">영상 제작</option><option value="research">검색·시장 조사</option><option value="coding">코딩</option></select>
+              </label>
+              <label class="diagnosis-field"><span><b>2</b> AI 사용 경험은?</span>
+                <select id="diagnosis-level"><option value="beginner">처음 또는 초보</option><option value="intermediate">몇 번 사용해 봄</option><option value="advanced">능숙하게 사용함</option></select>
+              </label>
+              <label class="diagnosis-field"><span><b>3</b> 원하는 요금 조건은?</span>
+                <select id="diagnosis-budget"><option value="free">무료 사용이 꼭 필요</option><option value="value">가격 대비 효율 중요</option><option value="any">성능이 좋다면 유료도 가능</option></select>
+              </label>
+              <label class="diagnosis-field"><span><b>4</b> 한국어 품질은?</span>
+                <select id="diagnosis-korean"><option value="5">매우 중요</option><option value="4">중요</option><option value="3">보통</option></select>
+              </label>
+              <label class="diagnosis-field"><span><b>5</b> 자료 보안은?</span>
+                <select id="diagnosis-privacy"><option value="5">회사·개인 자료라 매우 중요</option><option value="4">중요</option><option value="3">일반적인 수준이면 충분</option></select>
+              </label>
+            </div>
+            <div class="diagnosis-action"><p>선택한 조건은 서버로 전송하지 않고 추천 계산에만 사용해요.</p><button class="primary-btn diagnosis-submit" type="submit">내게 맞는 AI 3개 찾기 →</button></div>
+          </form>
+          <div class="diagnosis-result" id="diagnosis-result" hidden>
+            <div class="diagnosis-result-heading"><div><span class="eyebrow"><i></i> DIAGNOSIS RESULT</span><h3 id="diagnosis-title">추천 결과</h3><p id="diagnosis-caption"></p></div><button class="link-btn" id="diagnosis-retry" type="button">조건 다시 선택</button></div>
+            <div class="recommend-grid" id="diagnosis-grid" aria-live="polite"></div>
           </div>
         </section>
 
