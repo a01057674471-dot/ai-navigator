@@ -131,6 +131,23 @@
     .tool-title { font-size: 15px; font-weight: 850; }
     .tool-name-ko { margin-top: 2px; color: #626d77; font-size: 10px; font-weight: 750; }
     .tool-maker { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .deep-card-badge { display: inline-block; margin-left: 6px; padding: 2px 5px; border-radius: 5px; background: #eeeaff; color: #6155cd; font-size: 8px; font-weight: 850; vertical-align: 1px; }
+    .deep-guide-label { display: inline-block; margin-bottom: 10px; padding: 6px 9px; border-radius: 7px; background: #e9f8cf; color: #416319; font-size: 10px; font-weight: 850; }
+    .tool-result-example { margin-bottom: 14px; padding: 15px; border: 1px solid #dcd7ff; border-radius: 12px; background: linear-gradient(135deg, #f8f7ff, #f4f8ff); }
+    .tool-result-example span { color: #6155cd; font-size: 10px; font-weight: 850; }
+    .tool-result-example p { margin: 7px 0 0; color: #43505b; font-size: 12px; line-height: 1.7; }
+    .tool-fit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .tool-fit-card { padding: 14px; border-radius: 11px; }
+    .tool-fit-card.good { border: 1px solid #ccebdc; background: #f3fbf7; }
+    .tool-fit-card.caution { border: 1px solid #f1dfbd; background: #fffaf1; }
+    .tool-fit-card h4 { margin: 0 0 8px; font-size: 12px; }
+    .tool-fit-card .tool-detail-list { margin: 0; }
+    .tool-alternatives { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .tool-alternatives button { display: grid; gap: 4px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fbfcfd; text-align: left; }
+    .tool-alternatives button:hover { border-color: #b9c4f5; background: #f7f8ff; }
+    .tool-alternatives strong { color: var(--navy); font-size: 11px; }
+    .tool-alternatives span { color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .tool-alternatives b { color: var(--blue); font-size: 9px; }
     .match { display: flex; align-items: center; gap: 8px; margin: 19px 0 12px; }
     .match-bar { overflow: hidden; flex: 1; height: 6px; background: #edf0f3; border-radius: 99px; }
     .match-bar i { display: block; height: 100%; background: var(--blue); border-radius: inherit; }
@@ -409,6 +426,7 @@
       .search-wrap { padding-left: 13px; }
       .search-submit { padding: 10px 12px; }
       .advanced-filters { align-items: stretch; padding: 12px; }
+      .tool-fit-grid, .tool-alternatives { grid-template-columns: 1fr; }
       .tool-detail-grid { grid-template-columns: 1fr 1fr; }
       .prompt-box pre { padding: 38px 0 0; }
       .filter-field { min-width: calc(50% - 5px); flex: 1; }
