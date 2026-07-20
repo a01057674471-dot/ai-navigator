@@ -71,6 +71,8 @@
     .top-actions { display: flex; align-items: center; gap: 12px; }
     .icon-btn { position: relative; display: grid; place-items: center; width: 38px; height: 38px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 12px; font-size: 16px; }
     .notification-dot { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
+    .update-count { position: absolute; top: -5px; right: -6px; display: grid; min-width: 18px; height: 18px; padding: 0 4px; place-items: center; border: 2px solid var(--bg); border-radius: 99px; background: #e75959; color: #fff; font-size: 8px; font-weight: 900; }
+    .update-count[hidden] { display: none; }
     .main-content { max-width: 1240px; margin: 0 auto; padding: 28px 40px 70px; }
     .hero {
       position: relative; overflow: hidden; min-height: 340px; padding: 38px 42px;
@@ -350,6 +352,31 @@
     .insight-banner h3 { margin: 0; font-size: 16px; letter-spacing: -.05em; }
     .insight-banner p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; }
     .insight-btn { padding: 11px 14px; color: #fff; background: var(--navy); border-radius: 10px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .updates-heading-actions { display: flex; align-items: center; gap: 10px; }
+    .updates-status { padding: 7px 9px; border-radius: 999px; background: #f0f2f4; color: #77828c; font-size: 9px; font-weight: 850; }
+    .updates-status.live { background: #dcf6eb; color: #17845d; }
+    .updates-filters { display: flex; gap: 7px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 3px; }
+    .updates-list { display: grid; gap: 8px; }
+    .update-item { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .update-item.unread { border-color: #cfd7ff; background: #fafaff; box-shadow: inset 3px 0 #7165df; }
+    .update-icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 11px; font-size: 14px; font-weight: 900; }
+    .update-icon.new { background: #e9f8cf; color: #416319; }
+    .update-icon.price { background: #fff0d7; color: #9a6200; }
+    .update-icon.free { background: #e7f4ff; color: #2571a8; }
+    .update-copy { min-width: 0; }
+    .update-meta { display: flex; align-items: center; gap: 7px; color: #786ce0; font-size: 8px; font-weight: 850; }
+    .update-meta time { color: #98a2ab; }
+    .update-meta em { padding: 2px 5px; border-radius: 5px; background: #ffe8ef; color: #b84b6a; font-style: normal; }
+    .update-copy h3 { margin: 5px 0 3px; font-size: 12px; }
+    .update-copy p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .update-change { display: flex; align-items: center; gap: 7px; margin-top: 7px; font-size: 9px; }
+    .update-change del { color: #a0a9b1; }
+    .update-change b { color: #a0a9b1; }
+    .update-change strong { color: #17845d; }
+    .update-actions { display: flex; gap: 5px; }
+    .update-actions button { padding: 7px 8px; border-radius: 7px; background: #eef2ff; color: var(--blue); font-size: 9px; font-weight: 800; white-space: nowrap; }
+    .update-actions .read-btn { background: #f1f3f5; color: #77828c; }
+    .updates-note { margin: 9px 0 0; color: var(--muted); font-size: 9px; }
     .methodology { scroll-margin-top: 20px; padding: 24px; border: 1px solid #dce4e9; border-radius: var(--radius); background: #fff; }
     .methodology-open { padding: 7px 10px; border-radius: 999px; background: #e9f8cf; color: #416319; font-size: 9px; font-weight: 900; letter-spacing: .05em; }
     .methodology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -472,6 +499,9 @@
       .search-wrap { padding-left: 13px; }
       .search-submit { padding: 10px 12px; }
       .advanced-filters { align-items: stretch; padding: 12px; }
+      .updates-heading-actions { align-items: flex-end; flex-direction: column; gap: 5px; }
+      .update-item { grid-template-columns: 36px minmax(0, 1fr); }
+      .update-actions { grid-column: 2; }
       .result-preview-heading { align-items: flex-start; }
       .result-preview-grid { grid-template-columns: 1fr; }
       .verification-panel { grid-template-columns: 1fr; }
@@ -542,6 +572,7 @@
       <nav class="side-nav">
         <button class="nav-item" data-scroll="templates"><span class="nav-icon">▤</span>업무 템플릿</button>
         <button class="nav-item" data-scroll="news"><span class="nav-icon">◌</span>AI 뉴스</button>
+        <button class="nav-item" data-scroll="updates"><span class="nav-icon">♢</span>가격·신규 알림</button>
         <button class="nav-item" data-scroll="methodology"><span class="nav-icon">✓</span>추천 기준</button>
       </nav>
       <div class="nav-label" style="margin-top:26px">MY SPACE</div>
@@ -555,7 +586,7 @@
     </aside>
 
     <main id="top">
-      <header class="topbar"><div class="breadcrumb">월요일, 7월 20일 <span style="color:#cad2da">/</span> 오늘의 탐색 <span class="status-badge" id="data-status">데모 모드</span></div><div class="top-actions"><button class="icon-btn" data-toast="새로운 소식을 확인했어요." aria-label="알림" hidden>♢<i class="notification-dot"></i></button><button class="icon-btn" id="top-auth-action" aria-label="로그인">게</button></div></header>
+      <header class="topbar"><div class="breadcrumb">월요일, 7월 20일 <span style="color:#cad2da">/</span> 오늘의 탐색 <span class="status-badge" id="data-status">데모 모드</span></div><div class="top-actions"><button class="icon-btn update-bell" data-scroll="updates" aria-label="가격과 신규 AI 알림">♢<span class="update-count" id="update-count" hidden>0</span></button><button class="icon-btn" id="top-auth-action" aria-label="로그인">게</button></div></header>
       <div class="main-content">
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-layout">
@@ -671,6 +702,19 @@
             <p>마음에 드는 도구의 ‘♡ 저장’ 버튼을 누르면 여기에 모아드려요.</p>
             <button class="primary-btn" type="button" data-scroll="directory">AI 도구 둘러보기</button>
           </div>
+        </section>
+
+        <section class="section" id="updates">
+          <div class="section-heading"><div><h2>가격 변경 · 신규 AI 알림</h2><p>저장한 AI의 변화와 새로 등록된 도구를 놓치지 마세요.</p></div><div class="updates-heading-actions"><span class="updates-status" id="updates-status">알림 확인 중</span><button class="link-btn" id="mark-all-updates" type="button">모두 읽음</button></div></div>
+          <div class="updates-filters" role="tablist" aria-label="업데이트 알림 조건">
+            <button class="filter-btn active" type="button" data-update-filter="all">전체</button>
+            <button class="filter-btn" type="button" data-update-filter="saved">저장한 AI</button>
+            <button class="filter-btn" type="button" data-update-filter="price">가격·무료 범위</button>
+            <button class="filter-btn" type="button" data-update-filter="new">신규 AI</button>
+          </div>
+          <div class="updates-list" id="updates-list" aria-live="polite"></div>
+          <div class="empty" id="empty-updates">아직 이 조건에 해당하는 업데이트가 없어요.</div>
+          <p class="updates-note">저장한 AI는 목록에서 우선 표시됩니다. 사이트 알림은 개인정보 없이 현재 브라우저에서 읽음 상태만 저장해요.</p>
         </section>
 
         <section class="section" id="insight">
