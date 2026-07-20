@@ -162,6 +162,13 @@
     .workflow-role { display: block; color: var(--muted); font-size: 12px; line-height: 1.55; }
     .workflow-step:hover { border-color: #9b92ea; transform: translateY(-2px); }
     .workflow-tip { margin: 14px 0 0; color: #59636e; font-size: 12px; line-height: 1.6; }
+    .saved-heading { align-items: center; }
+    .saved-count-badge { flex: 0 0 auto; padding: 8px 12px; border: 1px solid #dcd7ff; border-radius: 999px; background: #f5f3ff; color: #6255c8; font-size: 12px; font-weight: 800; }
+    .saved-count-badge strong { font-size: 14px; }
+    .saved-empty { padding: 34px 20px; border: 1px dashed #d7dce2; border-radius: var(--radius); background: #fbfcfd; text-align: center; }
+    .saved-empty-icon { display: grid; width: 48px; height: 48px; margin: 0 auto 12px; place-items: center; border-radius: 50%; background: #eeeaff; color: #6c5bd2; font-size: 24px; }
+    .saved-empty h3 { margin: 0 0 7px; font-size: 17px; }
+    .saved-empty p { margin: 0 0 17px; color: var(--muted); font-size: 13px; line-height: 1.6; }
     .workflow-tip strong { color: #5144c6; }
     .use-case-list { display: grid; gap: 10px; }
     .use-case { display: flex; align-items: center; gap: 13px; padding: 12px 13px; border-radius: 13px; background: #f8fafc; }
@@ -324,7 +331,7 @@
       </nav>
       <div class="nav-label" style="margin-top:30px">MY SPACE</div>
       <nav class="side-nav">
-        <button class="nav-item" data-scroll="recommend" data-toast="저장한 AI는 카드의 저장됨 상태로 확인할 수 있어요."><span class="nav-icon">♡</span>저장한 목록</button>
+        <button class="nav-item" data-scroll="saved"><span class="nav-icon">♡</span>저장한 목록</button>
         <button class="nav-item" id="admin-nav" data-scroll="admin" hidden><span class="nav-icon">▣</span>뉴스 관리자</button>
       </nav>
       <div class="side-bottom">
@@ -359,6 +366,20 @@
           <div class="section-heading"><div><h2>목적별 AI 조합</h2><p>AI 하나만 고르지 말고, 가장 쉬운 작업 순서로 연결해 보세요.</p></div></div>
           <div class="workflow-tabs" id="workflow-tabs" role="tablist" aria-label="목적 선택"></div>
           <div id="workflow-result" aria-live="polite"></div>
+        </section>
+
+        <section class="section" id="saved">
+          <div class="section-heading saved-heading">
+            <div><h2>저장한 AI</h2><p id="saved-caption">저장한 도구를 한곳에서 다시 확인하세요.</p></div>
+            <span class="saved-count-badge"><strong id="saved-count">0</strong>개 저장됨</span>
+          </div>
+          <div class="recommend-grid" id="saved-grid" aria-live="polite"></div>
+          <div class="saved-empty" id="empty-saved">
+            <span class="saved-empty-icon">♡</span>
+            <h3>아직 저장한 AI가 없어요</h3>
+            <p>마음에 드는 도구의 ‘♡ 저장’ 버튼을 누르면 여기에 모아드려요.</p>
+            <button class="primary-btn" type="button" data-scroll="directory">AI 도구 둘러보기</button>
+          </div>
         </section>
 
         <section class="section" id="insight">
