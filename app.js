@@ -242,12 +242,12 @@
   }
 
   function bindCardActions() {
-    $('[data-compare]').forEach(button => {
+    $$('[data-compare]').forEach(button => {
       if (button.dataset.bound) return;
       button.dataset.bound = 'true';
       button.addEventListener('click', event => { event.stopPropagation(); toggleCompare(button.dataset.compare); });
     });
-    $('[data-save]').forEach(button => {
+    $$('[data-save]').forEach(button => {
       if (button.dataset.bound) return;
       button.dataset.bound = 'true';
       button.addEventListener('click', event => { event.stopPropagation(); toggleSave(button.dataset.save, button); });
