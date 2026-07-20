@@ -162,7 +162,7 @@
     .section { margin-top: 38px; }
     .view-hidden { display: none !important; }
     .home-more { padding-top: 5px; }
-    .home-more-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .home-more-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .home-more-btn { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 15px; color: var(--navy); background: #fff; border: 1px solid var(--line); border-radius: 14px; text-align: left; transition: .2s; }
     .home-more-btn:hover { border-color: #cbd7ff; transform: translateY(-2px); box-shadow: 0 8px 22px rgba(40,60,80,.06); }
     .home-more-btn span { display: grid; flex: 0 0 auto; place-items: center; width: 32px; height: 32px; color: var(--blue); background: var(--blue-soft); border-radius: 10px; font-size: 16px; }
@@ -349,6 +349,40 @@
     .template-count { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: #fff3d7; color: #8a5a00; font-size: 11px; font-weight: 850; }
     .template-filters { display: flex; gap: 7px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 3px; }
     .template-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .prompt-eyebrow { display: inline-flex; margin-bottom: 9px; color: var(--blue); }
+    .prompt-recipe-notice { display: flex; gap: 12px; margin-bottom: 15px; padding: 13px 15px; color: #5e6e7e; background: #f0f5ff; border: 1px solid #dce6ff; border-radius: 12px; font-size: 11px; line-height: 1.6; }
+    .prompt-recipe-notice strong { flex: 0 0 auto; color: var(--blue); }
+    .prompt-filters { margin-bottom: 16px; }
+    .prompt-recipe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .prompt-recipe-card { overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 5px 22px rgba(40,60,80,.03); transition: .2s; }
+    .prompt-recipe-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .prompt-recipe-visual { position: relative; display: grid; height: 120px; place-items: center; overflow: hidden; background: linear-gradient(135deg,#13263f,#234c78); }
+    .prompt-recipe-visual::before { content:''; position:absolute; width:120px; height:120px; border:1px solid rgba(255,255,255,.13); border-radius:50%; box-shadow:0 0 0 25px rgba(255,255,255,.025); }
+    .prompt-visual-character .prompt-recipe-visual { background: linear-gradient(135deg,#493c76,#8e72c8); }
+    .prompt-visual-profile .prompt-recipe-visual { background: linear-gradient(135deg,#16455c,#3b8d91); }
+    .prompt-visual-creative .prompt-recipe-visual { background: linear-gradient(135deg,#4b294d,#ba5963); }
+    .prompt-visual-business .prompt-recipe-visual { background: linear-gradient(135deg,#26434a,#65a69b); }
+    .prompt-recipe-icon { position:relative; z-index:1; font-size:43px; filter:drop-shadow(0 8px 14px rgba(0,0,0,.18)); }
+    .prompt-recipe-badge { position:absolute; z-index:2; top:10px; left:10px; padding:5px 7px; color:var(--navy); background:var(--lime); border-radius:6px; font-size:9px; font-weight:900; }
+    .prompt-recipe-content { padding:17px; }
+    .prompt-recipe-meta { display:flex; justify-content:space-between; gap:7px; color:#8995a1; font-size:9px; font-weight:750; }
+    .prompt-recipe-content h3 { margin:10px 0 7px; color:var(--navy); font-size:16px; letter-spacing:-.045em; }
+    .prompt-recipe-content p { min-height:42px; margin:0; color:#687685; font-size:11px; line-height:1.6; }
+    .prompt-recipe-actions { display:flex; gap:7px; margin-top:15px; }
+    .prompt-recipe-open { flex:1; padding:10px; color:#fff; background:var(--blue); border-radius:9px; font-size:10px; font-weight:850; }
+    .prompt-recipe-save { width:36px; color:#8995a1; background:#f4f6f8; border-radius:9px; font-size:16px; }
+    .prompt-recipe-save.saved { color:#e04c65; background:#fff0f3; }
+    .recipe-tool-row { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 5px; }
+    .recipe-tool-row span { padding:7px 9px; color:var(--blue); background:var(--blue-soft); border-radius:999px; font-size:10px; font-weight:800; }
+    .recipe-steps { display:grid; gap:8px; margin:0; padding-left:21px; color:#5e6b77; font-size:12px; line-height:1.6; }
+    .recipe-prompt-box pre { max-height:330px; overflow:auto; white-space:pre-wrap; }
+    .recipe-fix { padding:14px; color:#5e6b77; background:#f7f9fb; border:1px solid var(--line); border-radius:11px; }
+    .recipe-fix p { margin:0 0 11px; font-size:12px; line-height:1.65; }
+    .recipe-fix button { padding:8px 10px; color:var(--blue); background:var(--blue-soft); border-radius:8px; font-size:10px; font-weight:850; }
+    .recipe-caution { margin-top:19px; padding:14px; color:#765f35; background:#fff9e8; border-radius:11px; }
+    .recipe-caution strong { display:block; margin-bottom:5px; color:#a06f1a; font-size:11px; }
+    .recipe-caution p { margin:0; font-size:11px; line-height:1.6; }
+    .recipe-modal-actions { display:flex; gap:8px; margin-top:18px; }
     .template-card { display: flex; min-width: 0; flex-direction: column; padding: 17px; border: 1px solid var(--line); border-radius: 15px; background: #fff; }
     .template-card:hover { border-color: #b9c4f5; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(45,55,76,.07); }
     .template-top { display: flex; align-items: center; justify-content: space-between; }
@@ -625,6 +659,8 @@
       .mobile-nav span { font-size: 17px; }
       .home-more-grid { grid-template-columns: repeat(2, 1fr); }
       .directory-search-bar { grid-template-columns: 1fr; }
+      .prompt-recipe-grid { grid-template-columns: 1fr; }
+      .prompt-recipe-notice { align-items:flex-start; flex-direction:column; }
       .home-more-btn:last-child { grid-column: 1 / -1; }
       .site-footer { padding: 0 14px 88px; }
       .footer-card { align-items: flex-start; flex-direction: column; padding: 18px; }
@@ -647,6 +683,7 @@
       </nav>
       <div class="nav-label" style="margin-top:26px">USE & LEARN</div>
       <nav class="side-nav">
+        <button class="nav-item" data-scroll="prompts"><span class="nav-icon">⌘</span>프롬프트 레시피</button>
         <button class="nav-item" data-scroll="templates"><span class="nav-icon">▤</span>업무 템플릿</button>
         <button class="nav-item" data-scroll="news"><span class="nav-icon">◌</span>AI 뉴스</button>
         <button class="nav-item" data-scroll="updates"><span class="nav-icon">♢</span>가격·신규 알림</button>
@@ -734,6 +771,7 @@
         <section class="section home-more" id="home-more" aria-labelledby="home-more-title">
           <div class="section-heading"><div><h2 id="home-more-title">필요할 때 더 둘러보세요</h2><p>주요 기능은 메뉴에서 한 화면씩 편하게 볼 수 있어요.</p></div></div>
           <div class="home-more-grid">
+            <button class="home-more-btn" type="button" data-scroll="prompts"><span>⌘</span><strong>프롬프트 레시피</strong></button>
             <button class="home-more-btn" type="button" data-scroll="templates"><span>▤</span><strong>업무 템플릿</strong></button>
             <button class="home-more-btn" type="button" data-scroll="directory"><span>▦</span><strong>전체 AI 탐색</strong></button>
             <button class="home-more-btn" type="button" data-scroll="news"><span>◌</span><strong>AI 뉴스</strong></button>
@@ -752,6 +790,15 @@
           <div class="section-heading"><div><h2>목적별 AI 조합</h2><p>AI 하나만 고르지 말고, 가장 쉬운 작업 순서로 연결해 보세요.</p></div></div>
           <div class="workflow-tabs" id="workflow-tabs" role="tablist" aria-label="목적 선택"></div>
           <div id="workflow-result" aria-live="polite"></div>
+        </section>
+
+        <section class="section" id="prompts">
+          <div class="section-heading"><div><span class="eyebrow prompt-eyebrow"><i></i> PROMPT RECIPES</span><h2>결과가 좋아지는 프롬프트 레시피</h2><p>사진을 올리고 대괄호만 바꾸면 초보자도 구체적으로 명령할 수 있어요.</p></div><span class="template-count"><strong id="prompt-recipe-count">6</strong>개 검수 레시피</span></div>
+          <div class="prompt-recipe-notice"><strong>편집팀 검수 기준</strong><span>인물·제품 보존 조건, 구도·조명·비율, 금지 사항과 실패 수정문까지 포함했습니다. 결과는 사용한 AI와 원본 사진에 따라 달라질 수 있어요.</span></div>
+          <div class="template-filters prompt-filters" role="tablist" aria-label="프롬프트 레시피 분야">
+            <button class="filter-btn active" type="button" data-prompt-filter="all">전체</button><button class="filter-btn" type="button" data-prompt-filter="photo">필름 감성</button><button class="filter-btn" type="button" data-prompt-filter="character">캐릭터·추억</button><button class="filter-btn" type="button" data-prompt-filter="profile">프로필</button><button class="filter-btn" type="button" data-prompt-filter="creative">콘텐츠</button><button class="filter-btn" type="button" data-prompt-filter="business">쇼핑몰</button>
+          </div>
+          <div class="prompt-recipe-grid" id="prompt-recipe-grid" aria-live="polite"></div>
         </section>
 
         <section class="section" id="templates">
