@@ -46,6 +46,7 @@ create table if not exists public.news (
   published_at date,
   title text not null,
   summary text not null,
+  body text,
   insight text,
   category text,
   source text,
