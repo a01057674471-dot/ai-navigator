@@ -135,7 +135,9 @@
   function bindNewsActions() {
     $$('.news-item').forEach(item => item.addEventListener('click', event => {
       event.preventDefault();
-      const itemData = state.news.find(entry => entry.id === item.dataset.newsId);
+      const itemData = state.news.find(
+  entry => String(entry.id) === String(item.dataset.newsId)
+);
       if (itemData) openNews(itemData);
     }));
   }
