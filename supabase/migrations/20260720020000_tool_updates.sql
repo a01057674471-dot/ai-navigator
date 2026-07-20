@@ -37,7 +37,7 @@ begin
       values (
         new.id,
         'new_tool',
-        new.name || '이 AI 네비게이터에 새로 등록됐어요.',
+        '새 AI 등록 · ' || new.name,
         '가격·한국어·난이도 정보를 확인하고 비교해 보세요.',
         new.price
       );
@@ -50,7 +50,7 @@ begin
     values (
       new.id,
       'new_tool',
-      new.name || '이 AI 네비게이터에 새로 공개됐어요.',
+      '새 AI 공개 · ' || new.name,
       '새로 공개된 AI의 상세 정보와 활용 예시를 확인해 보세요.',
       new.price
     );
@@ -61,7 +61,7 @@ begin
     values (
       new.id,
       'price_change',
-      new.name || ' 가격 정보가 변경됐어요.',
+      new.name || ' 가격 정보 변경',
       '결제 전에 공식 사이트에서 최신 가격과 포함 기능을 확인하세요.',
       old.price,
       new.price
@@ -73,7 +73,7 @@ begin
     values (
       new.id,
       'free_limit_change',
-      new.name || ' 무료 사용 범위가 변경됐어요.',
+      new.name || ' 무료 사용 범위 변경',
       '무료 제공량과 사용 조건을 다시 확인해 보세요.',
       old.free_limit,
       new.free_limit
