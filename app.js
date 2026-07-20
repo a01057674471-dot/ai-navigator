@@ -61,7 +61,7 @@
   function showView(id = 'top') {
     const homeTargets = new Set(['top', 'popularity', 'home-more']);
     const isHome = homeTargets.has(id);
-    $('.main-content > section').forEach(section => {
+    document.querySelectorAll('.main-content > section').forEach(section => {
       const belongsToHome = section.classList.contains('hero') || ['popularity', 'home-more'].includes(section.id);
       const shouldShow = isHome ? belongsToHome : section.id === id;
       section.classList.toggle('view-hidden', !shouldShow);
