@@ -371,6 +371,14 @@
     .prompt-recipe-visual { position:relative; height:170px; overflow:hidden; background:#e8edf2; }
     .prompt-recipe-visual::after { content:''; position:absolute; inset:auto 0 0; height:48%; background:linear-gradient(transparent,rgba(5,16,31,.58)); pointer-events:none; }
     .prompt-recipe-visual img { width:100%; height:100%; object-fit:cover; transition:transform .35s ease; }
+    .prompt-preview-fallback { display:grid; width:100%; height:100%; place-items:center; align-content:center; gap:7px; color:#536475; background:linear-gradient(135deg,#eef3f8,#dfe9f3); }
+    .prompt-preview-fallback[hidden] { display:none; }
+    .prompt-preview-fallback b { font-size:32px; }
+    .prompt-preview-fallback small { font-size:10px; font-weight:800; }
+    .recipe-preview-fallback { display:grid; min-height:220px; place-items:center; align-content:center; gap:9px; color:#536475; background:linear-gradient(135deg,#eef3f8,#dfe9f3); }
+    .recipe-preview-fallback[hidden] { display:none; }
+    .recipe-preview-fallback b { font-size:40px; }
+    .recipe-preview-fallback small { max-width:280px; text-align:center; font-size:11px; line-height:1.55; }
     .prompt-recipe-card:hover .prompt-recipe-visual img { transform:scale(1.035); }
     .prompt-preview-label { position:absolute; z-index:2; left:10px; bottom:10px; padding:5px 7px; color:#fff; background:rgba(5,16,31,.72); border:1px solid rgba(255,255,255,.35); border-radius:6px; font-size:9px; font-weight:850; backdrop-filter:blur(4px); }
     .prompt-recipe-badge { position:absolute; z-index:2; top:10px; left:10px; padding:5px 7px; color:var(--navy); background:var(--lime); border-radius:6px; font-size:9px; font-weight:900; }
