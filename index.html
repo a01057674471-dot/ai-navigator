@@ -189,6 +189,20 @@
     .modal-body p { margin: 7px 0; }
     .demo-note { padding: 11px 13px; color: #887243; background: #fff9e8; border-radius: 10px; font-size: 11px; }
     .modal-link { display: inline-flex; margin-top: 12px; color: var(--blue); font-size: 12px; font-weight: 850; }
+    .tool-detail-intro { margin: 0 0 18px; color: #5e6b77; font-size: 13px; line-height: 1.7; }
+    .tool-detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; margin: 16px 0 20px; }
+    .tool-detail-stat { padding: 11px 12px; background: #f7f9fc; border: 1px solid var(--line); border-radius: 10px; }
+    .tool-detail-stat small { display: block; color: var(--muted); font-size: 9px; font-weight: 800; }
+    .tool-detail-stat strong { display: block; margin-top: 4px; color: var(--ink); font-size: 12px; }
+    .tool-detail-section { margin-top: 19px; padding-top: 17px; border-top: 1px solid var(--line); }
+    .tool-detail-section h4 { margin: 0 0 9px; color: var(--ink); font-size: 13px; }
+    .tool-detail-list { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+    .tool-detail-list li { position: relative; padding-left: 18px; color: #5e6b77; font-size: 12px; line-height: 1.55; }
+    .tool-detail-list.positive li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 900; }
+    .tool-detail-list.caution li::before { content: '!'; position: absolute; left: 2px; color: #d58131; font-weight: 900; }
+    .tool-detail-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 21px; padding-top: 17px; border-top: 1px solid var(--line); }
+    .tool-detail-verified { color: var(--muted); font-size: 10px; }
+    .tool-detail-link { display: inline-flex; padding: 10px 13px; color: #fff; background: var(--blue); border-radius: 9px; font-size: 11px; font-weight: 850; }
     .status-badge { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 4px 7px; color: #637181; background: #f3f6f8; border-radius: 6px; font-size: 9px; font-weight: 800; vertical-align: middle; }
     .status-badge.connected { color: #17845d; background: #e7f8f0; }
     .status-badge.admin { color: #7853c7; background: #f1eaff; }
@@ -247,6 +261,7 @@
       .quick-searches { gap: 6px; }
       .quick-chip { font-size: 10px; }
       .advanced-filters { align-items: stretch; padding: 12px; }
+      .tool-detail-grid { grid-template-columns: 1fr 1fr; }
       .filter-field { min-width: calc(50% - 5px); flex: 1; }
       .filter-select { width: 100%; min-width: 0; }
       .filter-reset { flex: 1; }
