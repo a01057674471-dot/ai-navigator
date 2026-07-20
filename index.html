@@ -148,6 +148,17 @@
     .verification-source a, .verification-source span { display: block; margin-top: 4px; color: var(--blue); font-size: 9px; font-weight: 750; line-height: 1.4; }
     .methodology-link { color: var(--blue); background: transparent; font-size: 10px; font-weight: 800; }
     .deep-card-badge { display: inline-block; margin-left: 6px; padding: 2px 5px; border-radius: 5px; background: #eeeaff; color: #6155cd; font-size: 8px; font-weight: 850; vertical-align: 1px; }
+    .result-preview { margin-bottom: 14px; padding: 16px; border: 1px solid #cfd8ff; border-radius: 13px; background: #f8f9ff; }
+    .result-preview-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .result-preview-heading span { color: #6155cd; font-size: 9px; font-weight: 850; }
+    .result-preview-heading h4 { margin: 3px 0 0; font-size: 13px; }
+    .result-preview-heading button { padding: 7px 9px; border-radius: 7px; background: #6155cd; color: #fff; font-size: 9px; font-weight: 800; white-space: nowrap; }
+    .result-preview-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 8px; }
+    .result-input, .result-output { min-width: 0; padding: 12px; border-radius: 9px; background: #fff; }
+    .result-input small, .result-output small { color: var(--muted); font-size: 8px; font-weight: 850; }
+    .result-input p { margin: 7px 0 0; color: #4e5a65; font-size: 10px; line-height: 1.6; }
+    .result-output pre { margin: 7px 0 0; overflow: auto; color: var(--ink); font-family: inherit; font-size: 10px; line-height: 1.65; white-space: pre-wrap; }
+    .result-disclaimer { margin: 9px 0 0; color: #87919a; font-size: 8px; line-height: 1.5; }
     .deep-guide-label { display: inline-block; margin-bottom: 10px; padding: 6px 9px; border-radius: 7px; background: #e9f8cf; color: #416319; font-size: 10px; font-weight: 850; }
     .tool-result-example { margin-bottom: 14px; padding: 15px; border: 1px solid #dcd7ff; border-radius: 12px; background: linear-gradient(135deg, #f8f7ff, #f4f8ff); }
     .tool-result-example span { color: #6155cd; font-size: 10px; font-weight: 850; }
@@ -461,6 +472,8 @@
       .search-wrap { padding-left: 13px; }
       .search-submit { padding: 10px 12px; }
       .advanced-filters { align-items: stretch; padding: 12px; }
+      .result-preview-heading { align-items: flex-start; }
+      .result-preview-grid { grid-template-columns: 1fr; }
       .verification-panel { grid-template-columns: 1fr; }
       .verification-source { padding: 8px 0 0; border-top: 1px solid #e3e7eb; border-left: 0; }
       .methodology { padding: 18px; }
