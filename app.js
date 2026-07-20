@@ -158,11 +158,49 @@
     $('#modal').classList.add('open');
   }
 
+  function difficultyLabel(value) {
+    if (Number(value) >= 5) return '매우 쉬움';
+    if (Number(value) >= 4) return '쉬움';
+    if (Number(value) >= 3) return '보통';
+    return '어려움';
+  }
+
+  function toolLimitations(tool) {
+    const items = [];
+    if (tool.priceType === 'paid') items.push('무료 사용 범위가 매우 제한적이거나 유료 구독이 필요할 수 있어요.');
+    else if (tool.priceType === 'freemium') items.push('무료 플랜에는 사용 횟수·크레딧·일부 기능 제한이 있을 수 있어요.');
+    if (Number(tool.korean) <= 3) items.push('한국어 명령과 결과 품질이 영어 사용보다 불안정할 수 있어요.');
+    if (Number(tool.privacy) <= 3) items.push('민감한 개인정보나 회사 기밀 자료는 입력하지 않는 편이 안전해요.');
+    if (Number(tool.ease) <= 3) items.push('처음 사용할 때 기능과 설정을 익히는 시간이 필요할 수 있어요.');
+    if (!items.length) items.push('가격과 제공 기능이 자주 바뀌므로 사용 전 공식 페이지 확인이 필요해요.');
+    return items.slice(0, 3);
+  }
+
+  function detailList(items, className) {
+    return `<ul class="tool-detail-list ${className}">${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+  }
+
   function openTool(tool) {
     $('#modal').classList.remove('compare-open');
     $('#modal-title').textContent = tool.name;
-    $('#modal-kicker').textContent = `${tool.maker} · ${tool.verifiedAt}`;
-    $('#modal-body').innerHTML = `<p>${escapeHtml(tool.description)}</p><h4>잘하는 일</h4><p>${escapeHtml(tool.bestFor.join(' · '))}</p><h4>사용 조건</h4><p>한국어 ${tool.korean}/5 · 품질 ${tool.quality}/5 · 속도 ${tool.speed}/5 · 보안 고려 ${tool.privacy}/5</p><p class="demo-note">가격과 기능은 변경될 수 있습니다. 공식 페이지에서 최신 정보를 확인하세요.</p><a class="modal-link" href="${escapeHtml(tool.officialUrl)}" target="_blank" rel="noreferrer">공식 사이트 열기 →</a>`;
+    $('#modal-kicker').textContent = `${tool.maker} · AI 도구 상세 정보`;
+    const strengths = tool.strengths?.length ? tool.strengths : ['핵심 기능은 공식 페이지에서 확인해 주세요.'];
+    const bestFor = tool.bestFor?.length ? tool.bestFor : ['활용 목적을 확인 중입니다.'];
+    const officialLink = tool.officialUrl && tool.officialUrl !== '#'
+      ? `<a class="tool-detail-link" href="${escapeHtml(tool.officialUrl)}" target="_blank" rel="noreferrer">공식 사이트 열기 →</a>`
+      : '';
+    $('#modal-body').innerHTML = `
+      <p class="tool-detail-intro">${escapeHtml(tool.description || tool.reason)}</p>
+      <div class="tool-detail-grid">
+        <div class="tool-detail-stat"><small>가격</small><strong>${escapeHtml(tool.price)}</strong></div>
+        <div class="tool-detail-stat"><small>초보 난이도</small><strong>${difficultyLabel(tool.ease)}</strong></div>
+        <div class="tool-detail-stat"><small>한국어</small><strong>${escapeHtml(tool.korean)}/5</strong></div>
+        <div class="tool-detail-stat"><small>품질</small><strong>${escapeHtml(tool.quality)}/5</strong></div>
+      </div>
+      <section class="tool-detail-section"><h4>이런 작업에 추천</h4>${detailList(bestFor, 'positive')}</section>
+      <section class="tool-detail-section"><h4>핵심 장점</h4>${detailList(strengths, 'positive')}</section>
+      <section class="tool-detail-section"><h4>사용 전 확인할 점</h4>${detailList(toolLimitations(tool), 'caution')}</section>
+      <div class="tool-detail-footer"><span class="tool-detail-verified">최근 검증: ${escapeHtml(tool.verifiedAt || '검증일 미정')} · 가격과 기능은 변경될 수 있습니다.</span>${officialLink}</div>`;
     $('#modal').classList.add('open');
   }
 
