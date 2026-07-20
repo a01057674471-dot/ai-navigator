@@ -641,13 +641,16 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     const saved = state.saved.has(tool.id);
     const tags = (recommendation ? tool.strengths : tool.bestFor.slice(0, 3)).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('');
     const match = recommendation ? `<div class="match"><div class="match-bar"><i style="width:${tool.total}%"></i></div><span class="match-score">${tool.total}% 적합</span></div>` : '';
-    const reason = recommendation ? `<div class="recommend-reason">${escapeHtml(tool.reason)}</div>` : '';
+    const reasonItems = recommendation ? [tool.reason, ...(tool.strengths || tool.bestFor || []).slice(0, 2).map(item => `${item}에 강해요`)].filter(Boolean).slice(0, 3) : [];
+    const reason = recommendation ? `<div class="recommend-reason"><strong>추천 이유</strong><ul>${reasonItems.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>` : '';
+    const accessLabel = tool.priceType === 'free' ? '무료' : tool.priceType === 'freemium' ? '무료 플랜 있음' : tool.priceType === 'paid' ? '유료' : '요금 확인 필요';
+    const priceInfo = recommendation ? `<div class="recommend-facts"><div><span>이용 조건</span><strong>${escapeHtml(accessLabel)}</strong></div><div><span>현재 요금</span><strong>${escapeHtml(tool.price || '확인 필요')}</strong></div>${tool.freeLimit ? `<p>무료 범위 · ${escapeHtml(tool.freeLimit)}</p>` : ''}</div>` : '';
     return `<article class="recommend-card" data-tool-id="${escapeHtml(tool.id)}">
       ${recommendation ? `<span class="rank">${String(index + 1).padStart(2, '0')}</span>` : ''}
       <div class="tool-head">${toolLogoMarkup(tool)}<div>${toolNameMarkup(tool)}<div class="tool-maker">${escapeHtml(tool.maker)}${deepToolProfiles[String(tool.id)] ? '<span class="deep-card-badge">심층 정보 · 예시</span>' : ''}</div></div></div>
       ${match}${reason}<div class="tag-row">${tags}</div>
-      ${verificationMarkup(tool, true)}
-      <div class="card-footer"><span class="price">${escapeHtml(tool.price)}</span><div class="card-actions"><button class="compare-btn ${state.compare.has(tool.id) ? 'selected' : ''}" data-compare="${escapeHtml(tool.id)}">${state.compare.has(tool.id) ? '✓ 비교중' : '+ 비교'}</button><button class="save-btn ${saved ? 'saved' : ''}" data-save="${escapeHtml(tool.id)}" aria-label="${saved ? '저장 취소' : '저장'}">${saved ? '♥ 저장됨' : '♡ 저장'}</button><button class="detail-btn" data-detail="${escapeHtml(tool.id)}">상세 보기</button></div></div>
+      ${priceInfo}${verificationMarkup(tool, true)}
+      <div class="card-footer">${recommendation ? '' : `<span class="price">${escapeHtml(tool.price)}</span>`}<div class="card-actions"><button class="compare-btn ${state.compare.has(tool.id) ? 'selected' : ''}" data-compare="${escapeHtml(tool.id)}">${state.compare.has(tool.id) ? '✓ 비교중' : '+ 비교'}</button><button class="save-btn ${saved ? 'saved' : ''}" data-save="${escapeHtml(tool.id)}" aria-label="${saved ? '저장 취소' : '저장'}">${saved ? '♥ 저장됨' : '♡ 저장'}</button><button class="detail-btn" data-detail="${escapeHtml(tool.id)}">상세 보기</button></div></div>
     </article>`;
   }
 
