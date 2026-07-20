@@ -147,6 +147,11 @@
     .hero-action { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 2px 9px; align-items: center; padding: 14px; border-radius: 13px; text-align: left; }
     .hero-action.primary { color: var(--navy); background: var(--lime); }
     .hero-action.secondary { color: #fff; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
+    .hero-prompt-action { overflow: hidden; border-color: rgba(192,238,85,.38) !important; background: linear-gradient(135deg,rgba(192,238,85,.16),rgba(77,111,255,.18)) !important; }
+    .hero-prompt-action::after { content:''; position:absolute; right:-18px; bottom:-28px; width:82px; height:82px; border:1px solid rgba(192,238,85,.22); border-radius:50%; }
+    .hero-prompt-action em { position:absolute; top:7px; right:9px; padding:3px 5px; color:var(--navy); background:var(--lime); border-radius:5px; font-size:7px; font-style:normal; font-weight:900; }
+    .hero-prompt-action > b { margin-right:2px; }
+    .hero-prompt-action:hover { border-color:var(--lime) !important; }
     .hero-action > span { grid-row: 1 / 3; color: currentColor; font-size: 10px; font-weight: 900; opacity: .65; }
     .hero-action strong { font-size: 13px; }
     .hero-action small { color: currentColor; font-size: 9px; opacity: .72; }
@@ -756,6 +761,7 @@
               <p>가격·한국어·사용 난이도를 비교해<br />바로 시작할 수 있는 AI 3개와 사용법을 알려드려요.</p>
               <div class="hero-actions">
                 <button class="hero-action primary" type="button" data-scroll="diagnosis"><span>선택형</span><strong>질문으로 더 정확히 찾기</strong><small>5가지 조건을 고르면 맞춤 추천</small><b>→</b></button>
+                <button class="hero-action secondary hero-prompt-action" type="button" data-scroll="prompts"><span>⌘</span><strong>인기 프롬프트 바로 쓰기</strong><small>사진·프로필·쇼핑몰 레시피 21개</small><b>→</b><em>추천</em></button>
               </div>
               <div class="hero-proof"><span>✓ AI 32개 비교</span><span>✓ 한국어 이름</span><button type="button" data-scroll="methodology">✓ 추천 기준 공개</button><button type="button" id="share-site">↗ 친구에게 공유</button></div>
             </div>
