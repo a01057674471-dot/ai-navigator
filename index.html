@@ -71,6 +71,7 @@
     .app-shell { display: flex; min-height: 100vh; }
     .sidebar {
       position: fixed; inset: 0 auto 0 0; z-index: 10;
+      overflow-y: auto;
       display: flex; flex-direction: column;
       width: 248px; padding: 28px 20px 22px;
       background: #fff; border-right: 1px solid var(--line);
@@ -85,6 +86,14 @@
     .brand-name span { color: var(--blue); }
     .nav-label { padding: 0 12px 10px; color: #a4afbb; font-size: 11px; font-weight: 800; letter-spacing: .09em; }
     .side-nav { display: grid; gap: 6px; }
+    .nav-more { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+    .nav-more summary { display:flex; align-items:center; gap:10px; padding:10px 13px; color:#84909c; border-radius:10px; cursor:pointer; font-size:12px; font-weight:800; list-style:none; }
+    .nav-more summary::-webkit-details-marker { display:none; }
+    .nav-more summary:hover { color:var(--navy); background:#f6f8fb; }
+    .nav-more summary b { margin-left:auto; transition:transform .2s; }
+    .nav-more[open] summary b { transform:rotate(180deg); }
+    .nav-more .side-nav { margin-top:5px; }
+    .nav-more .nav-item { padding-top:9px; padding-bottom:9px; font-size:12px; }
     .nav-item {
       display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 13px;
       color: #84909c; border-radius: 12px; background: transparent; text-align: left; font-weight: 700;
@@ -145,7 +154,7 @@
     .hero-action:hover { transform: translateY(-2px); }
     .hero-proof { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 13px; color: #9fb0c3; font-size: 9px; font-weight: 750; }
     .hero-search-panel { position: relative; padding: 22px; border: 1px solid rgba(255,255,255,.14); border-radius: 18px; background: rgba(255,255,255,.08); backdrop-filter: blur(10px); }
-    .hero-search-number { display: inline-grid; width: 30px; height: 30px; place-items: center; border-radius: 9px; background: rgba(192,238,85,.15); color: var(--lime); font-size: 10px; font-weight: 900; }
+    .hero-search-number { display: inline-flex; min-height: 30px; padding: 0 10px; align-items: center; border-radius: 9px; background: rgba(192,238,85,.15); color: var(--lime); font-size: 9px; font-weight: 900; }
     .hero-search-panel h2 { margin: 13px 0 5px; font-size: 18px; letter-spacing: -.04em; }
     .hero-search-panel > p { margin: 0 0 15px; font-size: 11px; }
     .hero-search-panel .search-wrap { padding-left: 12px; }
@@ -728,26 +737,25 @@
       <a class="brand" href="#top" data-scroll="top" aria-label="AI 네비게이터 홈">
         <span class="brand-mark">✦</span><span class="brand-name">AI <span>네비게이터</span></span>
       </a>
-      <div class="nav-label">START HERE</div>
+      <div class="nav-label">주요 기능</div>
       <nav class="side-nav">
         <button class="nav-item active" data-scroll="top"><span class="nav-icon">⌂</span>홈</button>
         <button class="nav-item" data-scroll="diagnosis"><span class="nav-icon">◎</span>1분 AI 진단</button>
         <button class="nav-item" data-scroll="directory"><span class="nav-icon">▦</span>AI 직접 찾기</button>
-        <button class="nav-item" data-scroll="popularity"><span class="nav-icon">↗</span>최근 관심 AI</button>
-      </nav>
-      <div class="nav-label" style="margin-top:26px">USE & LEARN</div>
-      <nav class="side-nav">
         <button class="nav-item" data-scroll="prompts"><span class="nav-icon">⌘</span>프롬프트 레시피</button>
         <button class="nav-item" data-scroll="templates"><span class="nav-icon">▤</span>업무 템플릿</button>
         <button class="nav-item" data-scroll="news"><span class="nav-icon">◌</span>AI 뉴스</button>
-        <button class="nav-item" data-scroll="updates"><span class="nav-icon">♢</span>가격·신규 알림</button>
-        <button class="nav-item" data-scroll="methodology"><span class="nav-icon">✓</span>추천 기준</button>
       </nav>
-      <div class="nav-label" style="margin-top:26px">MY SPACE</div>
-      <nav class="side-nav">
-        <button class="nav-item" data-scroll="saved"><span class="nav-icon">♡</span>저장한 목록</button>
-        <button class="nav-item" id="admin-nav" data-scroll="admin" hidden><span class="nav-icon">▣</span>뉴스 관리자</button>
-      </nav>
+      <details class="nav-more">
+        <summary><span>•••</span> 더보기 <b>⌄</b></summary>
+        <nav class="side-nav">
+          <button class="nav-item" data-scroll="popularity"><span class="nav-icon">↗</span>최근 관심 AI</button>
+          <button class="nav-item" data-scroll="saved"><span class="nav-icon">♡</span>저장한 목록</button>
+          <button class="nav-item" data-scroll="updates"><span class="nav-icon">♢</span>가격·신규 알림</button>
+          <button class="nav-item" data-scroll="methodology"><span class="nav-icon">✓</span>추천 기준</button>
+          <button class="nav-item" id="admin-nav" data-scroll="admin" hidden><span class="nav-icon">▣</span>뉴스 관리자</button>
+        </nav>
+      </details>
       <div class="side-bottom">
         <div class="profile-card" id="profile-card"><div class="avatar" id="profile-avatar">게</div><div><div class="profile-name" id="profile-name">게스트</div><div class="profile-type" id="profile-type">로그인하면 저장 동기화</div></div><button class="settings-btn" id="auth-action" aria-label="로그인">↗</button></div>
       </div>
@@ -759,24 +767,24 @@
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-layout">
             <div class="hero-copy">
-              <div class="eyebrow"><i></i> AI DECISION COMPASS</div>
-              <h1 id="hero-title">한국 사용자에게 맞는 AI를<br /><span style="color:var(--lime)">1분 만에 찾고 바로 사용하세요.</span></h1>
-              <p>32개 AI를 가격·한국어·난이도까지 비교해<br />지금 필요한 도구와 사용법을 함께 알려드려요.</p>
+              <div class="eyebrow"><i></i> 내 일에 맞는 AI 찾기</div>
+              <h1 id="hero-title">하고 싶은 일을 입력하면<br /><span style="color:var(--lime)">맞는 AI와 프롬프트를 함께 추천해요.</span></h1>
+              <p>가격·한국어·사용 난이도를 비교해<br />바로 시작할 수 있는 AI 3개와 사용법을 알려드려요.</p>
               <div class="hero-actions">
-                <button class="hero-action primary" type="button" data-scroll="diagnosis"><span>01</span><strong>1분 AI 진단 시작</strong><small>질문 5개로 추천 AI 3개 찾기</small><b>→</b></button>
+                <button class="hero-action primary" type="button" data-scroll="diagnosis"><span>선택형</span><strong>질문으로 더 정확히 찾기</strong><small>5가지 조건을 고르면 맞춤 추천</small><b>→</b></button>
               </div>
               <div class="hero-proof"><span>✓ AI 32개 비교</span><span>✓ 한국어 이름</span><button type="button" data-scroll="methodology">✓ 추천 기준 공개</button><button type="button" id="share-site">↗ 친구에게 공유</button></div>
             </div>
             <div class="hero-search-panel">
-              <div class="hero-search-number">02</div>
-              <h2>하고 싶은 일이 분명한가요?</h2>
-              <p>한 문장으로 입력하면 바로 추천해 드려요.</p>
+              <div class="hero-search-number">가장 빠른 방법</div>
+              <h2>지금 무엇을 하고 싶나요?</h2>
+              <p>한 문장만 입력하면 AI 3개를 바로 추천해 드려요.</p>
               <form class="search-wrap" id="recommend-form">
                 <span class="search-symbol">⌕</span>
-                <input class="search-input" id="search-input" autocomplete="off" placeholder="예: 유튜브 쇼츠 만들기" aria-label="원하는 작업 입력" />
+                <input class="search-input" id="search-input" autocomplete="off" placeholder="예: 제품 사진으로 쇼츠 만들기" aria-label="원하는 작업 입력" />
                 <button class="search-submit" type="submit">AI 찾기</button>
               </form>
-              <small class="hero-search-help">예: 회의록 정리 · 제품 이미지 · 시장 조사 · 코딩 오류</small>
+              <small class="hero-search-help">예: 회의록 요약 · 카톡 프로필 만들기 · 시장 조사 · 코딩 오류</small>
             </div>
           </div>
         </section>
