@@ -142,6 +142,19 @@
     }));
   }
 
+  function openAllNews() {
+    $('#modal-title').textContent = '전체 AI 뉴스';
+    $('#modal-kicker').textContent = `${state.news.length}개의 발행 뉴스`;
+    $('#modal-body').innerHTML = state.news.length
+      ? `<div class="news-list">${state.news.map(item => `<button type="button" class="news-item all-news-item" data-all-news-id="${escapeHtml(item.id)}" style="width:100%;text-align:left;background:transparent"><div class="news-meta">${escapeHtml(item.label)} <time>${escapeHtml(item.date)}</time></div><p class="news-title">${escapeHtml(item.title)}</p><p class="news-summary">${escapeHtml(item.summary)}</p></button>`).join('')}</div>`
+      : '<div class="empty" style="display:block">아직 발행된 뉴스가 없습니다.</div>';
+    $('#modal').classList.add('open');
+    $('.all-news-item').forEach(button => button.addEventListener('click', () => {
+      const itemData = state.news.find(entry => String(entry.id) === String(button.dataset.allNewsId));
+      if (itemData) openNews(itemData);
+    }));
+  }
+
   function openNews(item) {
     $('#modal-title').textContent = item.title;
     $('#modal-kicker').textContent = `${item.label} · ${item.date}`;
@@ -220,7 +233,8 @@
   }
 
   function bindModal() {
-    $$('[data-close-modal]').forEach(button => button.addEventListener('click', () => $('#modal').classList.remove('open')));
+    $('#all-news-button').addEventListener('click', openAllNews);
+    $('[data-close-modal]').forEach(button => button.addEventListener('click', () => $('#modal').classList.remove('open')));
     $('#modal').addEventListener('click', event => { if (event.target === $('#modal')) $('#modal').classList.remove('open'); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape') { $('#modal').classList.remove('open'); $('#auth-modal').classList.remove('open'); } });
   }
