@@ -134,6 +134,7 @@
     h1 { margin: 0; font-size: clamp(28px, 3.2vw, 42px); line-height: 1.15; letter-spacing: -.07em; }
     .hero p { margin: 14px 0 22px; color: #b9c7d7; font-size: 14px; line-height: 1.6; }
     .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .hero-actions .hero-action:only-child { grid-column: 1 / -1; }
     .hero-action { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 2px 9px; align-items: center; padding: 14px; border-radius: 13px; text-align: left; }
     .hero-action.primary { color: var(--navy); background: var(--lime); }
     .hero-action.secondary { color: #fff; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
@@ -285,6 +286,8 @@
     .workflow-role { display: block; color: var(--muted); font-size: 12px; line-height: 1.55; }
     .workflow-step:hover { border-color: #9b92ea; transform: translateY(-2px); }
     .workflow-tip { margin: 14px 0 0; color: #59636e; font-size: 12px; line-height: 1.6; }
+    .view-back { margin-bottom: 12px; padding: 7px 10px; border: 1px solid #dfe5eb; border-radius: 9px; background: #fff; color: #4f5b66; font-size: 11px; font-weight: 800; }
+    .view-back:hover { border-color: #9eabed; color: #4036a5; transform: translateX(-2px); }
     .diagnosis-time { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: #e9f8cf; color: #416319; font-size: 11px; font-weight: 850; }
     .diagnosis-card { padding: 22px; border: 1px solid #dfe5eb; border-radius: var(--radius); background: linear-gradient(135deg, #fff, #f8faff); }
     .diagnosis-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
@@ -714,7 +717,6 @@
               <p>32개 AI를 가격·한국어·난이도까지 비교해<br />지금 필요한 도구와 사용법을 함께 알려드려요.</p>
               <div class="hero-actions">
                 <button class="hero-action primary" type="button" data-scroll="diagnosis"><span>01</span><strong>1분 AI 진단 시작</strong><small>질문 5개로 추천 AI 3개 찾기</small><b>→</b></button>
-                <button class="hero-action secondary" type="button" data-scroll="popularity"><span>03</span><strong>최근 관심 AI 보기</strong><small>방문자가 확인한 도구 보기</small><b>→</b></button>
               </div>
               <div class="hero-proof"><span>✓ AI 32개 비교</span><span>✓ 한국어 이름</span><button type="button" data-scroll="methodology">✓ 추천 기준 공개</button><button type="button" id="share-site">↗ 친구에게 공유</button></div>
             </div>
@@ -733,7 +735,7 @@
         </section>
 
         <section class="section" id="diagnosis">
-          <div class="section-heading"><div><h2>5문항 AI 선택 진단</h2><p>어려운 설명 없이 조건만 고르면 잘 맞는 AI 3개를 찾아드려요.</p></div><span class="diagnosis-time">약 1분</span></div>
+          <div class="section-heading"><div><button class="view-back" type="button" data-scroll="top">← 홈으로</button><h2>5문항 AI 선택 진단</h2><p>어려운 설명 없이 조건만 고르면 잘 맞는 AI 3개를 찾아드려요.</p></div><span class="diagnosis-time">약 1분</span></div>
           <form class="diagnosis-card" id="diagnosis-form">
             <div class="diagnosis-grid">
               <label class="diagnosis-field"><span><b>1</b> 어떤 일이 필요한가요?</span>
