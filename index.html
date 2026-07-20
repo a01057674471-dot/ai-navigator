@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 네비게이터 — 내 일에 맞는 AI를 찾다</title>
+  <meta name="description" content="상황에 맞는 AI 추천과 최신 AI 인사이트를 한곳에서 확인하세요." />
+  <style>
+    :root {
+      --ink: #17212b;
+      --muted: #718096;
+      --line: #e8edf2;
+      --paper: #f7f9fb;
+      --card: #ffffff;
+      --navy: #13263f;
+      --blue: #3d6bff;
+      --blue-soft: #eef2ff;
+      --lime: #c9f36a;
+      --orange: #ff9d5c;
+      --green: #2dbb82;
+      --shadow: 0 16px 44px rgba(25, 52, 79, .08);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      letter-spacing: -.025em;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; border: 0; }
+    a { color: inherit; text-decoration: none; }
+    .app-shell { display: flex; min-height: 100vh; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0; z-index: 10;
+      display: flex; flex-direction: column;
+      width: 248px; padding: 28px 20px 22px;
+      background: #fff; border-right: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 0 10px; margin-bottom: 48px; }
+    .brand-mark {
+      display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px;
+      color: var(--navy); background: var(--lime); font-size: 19px; font-weight: 900;
+      transform: rotate(-7deg);
+    }
+    .brand-name { font-size: 19px; font-weight: 800; letter-spacing: -.06em; }
+    .brand-name span { color: var(--blue); }
+    .nav-label { padding: 0 12px 10px; color: #a4afbb; font-size: 11px; font-weight: 800; letter-spacing: .09em; }
+    .side-nav { display: grid; gap: 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 13px;
+      color: #84909c; border-radius: 12px; background: transparent; text-align: left; font-weight: 700;
+      transition: .2s ease;
+    }
+    .nav-item:hover, .nav-item.active { color: var(--navy); background: #f0f4ff; }
+    .nav-item.active { box-shadow: inset 3px 0 0 var(--blue); }
+    .nav-icon { width: 21px; text-align: center; font-size: 17px; }
+    .side-bottom { margin-top: auto; }
+    .profile-card { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; }
+    .avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: #fff; background: var(--navy); font-size: 13px; font-weight: 800; }
+    .profile-name { font-size: 13px; font-weight: 800; }
+    .profile-type { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .settings-btn { margin-left: auto; color: var(--muted); background: transparent; font-size: 17px; }
+    main { width: calc(100% - 248px); margin-left: 248px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; max-width: 1240px; margin: 0 auto; padding: 25px 40px 0; }
+    .breadcrumb { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .top-actions { display: flex; align-items: center; gap: 12px; }
+    .icon-btn { position: relative; display: grid; place-items: center; width: 38px; height: 38px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 12px; font-size: 16px; }
+    .notification-dot { position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
+    .main-content { max-width: 1240px; margin: 0 auto; padding: 28px 40px 70px; }
+    .hero {
+      position: relative; overflow: hidden; min-height: 266px; padding: 36px 42px;
+      border-radius: 26px; color: #fff; background: var(--navy);
+      box-shadow: 0 18px 45px rgba(19, 38, 63, .16);
+    }
+    .hero::before { content: ""; position: absolute; width: 330px; height: 330px; top: -170px; right: 12%; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; box-shadow: 0 0 0 46px rgba(255,255,255,.03), 0 0 0 92px rgba(255,255,255,.03); }
+    .hero::after { content: ""; position: absolute; width: 190px; height: 190px; right: -30px; bottom: -95px; background: var(--lime); border-radius: 50%; opacity: .95; }
+    .hero-copy { position: relative; z-index: 1; max-width: 680px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 13px; color: var(--lime); font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+    .eyebrow i { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); }
+    h1 { margin: 0; font-size: clamp(28px, 3.2vw, 42px); line-height: 1.15; letter-spacing: -.07em; }
+    .hero p { margin: 14px 0 24px; color: #b9c7d7; font-size: 15px; line-height: 1.6; }
+    .search-wrap { display: flex; align-items: center; max-width: 680px; padding: 7px 7px 7px 18px; background: #fff; border-radius: 14px; }
+    .search-symbol { color: var(--blue); font-size: 18px; }
+    .search-input { min-width: 0; flex: 1; padding: 7px 12px; color: var(--ink); outline: none; border: 0; font-size: 14px; }
+    .search-input::placeholder { color: #a6b1bb; }
+    .search-submit { padding: 11px 17px; color: #fff; background: var(--blue); border-radius: 10px; font-size: 13px; font-weight: 800; }
+    .quick-searches { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+    .quick-chip { padding: 7px 11px; color: #b9c7d7; border: 1px solid rgba(255,255,255,.16); border-radius: 99px; background: rgba(255,255,255,.06); font-size: 11px; font-weight: 700; }
+    .quick-chip:hover { color: var(--lime); border-color: var(--lime); }
+    .section { margin-top: 38px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 17px; }
+    .section-heading h2 { margin: 0; font-size: 21px; letter-spacing: -.055em; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .link-btn { color: var(--blue); background: transparent; font-size: 12px; font-weight: 800; }
+    .recommend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .recommend-card { position: relative; padding: 22px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 5px 22px rgba(40, 60, 80, .03); transition: transform .2s, box-shadow .2s; }
+    .recommend-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .rank { position: absolute; top: 19px; right: 20px; color: #a5b0ba; font-size: 12px; font-weight: 900; }
+    .tool-head { display: flex; align-items: center; gap: 11px; }
+    .tool-logo { display: grid; place-items: center; width: 40px; height: 40px; color: #fff; border-radius: 12px; font-size: 18px; font-weight: 900; }
+    .logo-blue { background: linear-gradient(135deg, #4b7bff, #6e50e8); }
+    .logo-amber { background: linear-gradient(135deg, #ffb84f, #ff7f54); }
+    .logo-green { background: linear-gradient(135deg, #32c89a, #1689a7); }
+    .tool-title { font-size: 15px; font-weight: 850; }
+    .tool-maker { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .match { display: flex; align-items: center; gap: 8px; margin: 19px 0 12px; }
+    .match-bar { overflow: hidden; flex: 1; height: 6px; background: #edf0f3; border-radius: 99px; }
+    .match-bar i { display: block; height: 100%; background: var(--blue); border-radius: inherit; }
+    .match-score { color: var(--blue); font-size: 12px; font-weight: 900; }
+    .recommend-reason { min-height: 41px; color: #5e6b77; font-size: 12px; line-height: 1.65; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; }
+    .tag { padding: 5px 8px; color: #667487; background: #f4f6f8; border-radius: 6px; font-size: 10px; font-weight: 800; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #f0f2f4; }
+    .price { color: #687683; font-size: 11px; font-weight: 700; }
+    .card-actions { display: flex; align-items: center; gap: 7px; }
+    .save-btn { padding: 7px 9px; color: #8b98a5; background: #f6f8fa; border-radius: 8px; font-size: 10px; font-weight: 850; }
+    .save-btn:hover, .save-btn.saved { color: #e65e79; background: #fff0f3; }
+    .detail-btn { padding: 8px 11px; color: var(--blue); background: var(--blue-soft); border-radius: 8px; font-size: 11px; font-weight: 850; }
+    .dashboard-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: 18px; }
+    .panel { padding: 23px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); }
+    .panel-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px; }
+    .panel-title { margin: 0; font-size: 16px; font-weight: 850; letter-spacing: -.04em; }
+    .panel-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+    .use-case-list { display: grid; gap: 10px; }
+    .use-case { display: flex; align-items: center; gap: 13px; padding: 12px 13px; border-radius: 13px; background: #f8fafc; }
+    .use-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #edf2ff; font-size: 16px; }
+    .use-copy { flex: 1; min-width: 0; }
+    .use-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 800; }
+    .use-meta { margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .use-arrow { color: #aab5bf; font-size: 16px; }
+    .news-list { display: grid; gap: 3px; }
+    .news-item { display: block; padding: 12px 0; border-bottom: 1px solid #eff2f4; }
+    .news-item:last-child { border-bottom: 0; }
+    .news-meta { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; color: var(--blue); font-size: 10px; font-weight: 850; }
+    .news-meta time { color: #a4adb5; font-weight: 600; }
+    .news-title { margin: 0; font-size: 13px; line-height: 1.5; font-weight: 780; }
+    .news-summary { overflow: hidden; display: -webkit-box; margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+    .insight-banner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 23px 26px; color: var(--navy); background: var(--lime); border-radius: var(--radius); }
+    .insight-banner h3 { margin: 0; font-size: 16px; letter-spacing: -.05em; }
+    .insight-banner p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; }
+    .insight-btn { padding: 11px 14px; color: #fff; background: var(--navy); border-radius: 10px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .directory-tools { display: flex; gap: 7px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 2px; }
+    .filter-btn { padding: 8px 13px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 99px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .filter-btn.active, .filter-btn:hover { color: var(--blue); border-color: #bfcaff; background: var(--blue-soft); }
+    .empty { display: none; padding: 35px; color: var(--muted); text-align: center; background: #fff; border: 1px dashed #d9e0e7; border-radius: var(--radius); font-size: 13px; }
+    .demo-badge { display: inline-flex; margin-left: 7px; padding: 4px 7px; color: #a77722; background: #fff8df; border-radius: 5px; font-size: 9px; font-weight: 800; vertical-align: middle; }
+    .modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px; background: rgba(19, 38, 63, .45); opacity: 0; pointer-events: none; transition: .2s; }
+    .modal.open { opacity: 1; pointer-events: auto; }
+    .modal-card { width: min(100%, 540px); max-height: min(680px, 90vh); overflow: auto; padding: 28px; background: #fff; border-radius: 22px; box-shadow: 0 28px 80px rgba(10, 31, 55, .24); transform: translateY(12px); transition: .2s; }
+    .modal.open .modal-card { transform: translateY(0); }
+    .modal-top { display: flex; justify-content: space-between; gap: 20px; align-items: start; }
+    .modal-kicker { color: var(--blue); font-size: 10px; font-weight: 850; letter-spacing: .04em; }
+    .modal-title { margin: 8px 0 0; font-size: 22px; letter-spacing: -.06em; }
+    .modal-close { display: grid; place-items: center; width: 30px; height: 30px; color: var(--muted); background: #f5f7f9; border-radius: 9px; font-size: 18px; }
+    .modal-body { margin-top: 23px; color: #5e6b77; font-size: 13px; line-height: 1.7; }
+    .modal-body h4 { margin: 21px 0 5px; color: var(--ink); font-size: 13px; }
+    .modal-body p { margin: 7px 0; }
+    .demo-note { padding: 11px 13px; color: #887243; background: #fff9e8; border-radius: 10px; font-size: 11px; }
+    .modal-link { display: inline-flex; margin-top: 12px; color: var(--blue); font-size: 12px; font-weight: 850; }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 4px 7px; color: #637181; background: #f3f6f8; border-radius: 6px; font-size: 9px; font-weight: 800; vertical-align: middle; }
+    .status-badge.connected { color: #17845d; background: #e7f8f0; }
+    .status-badge.admin { color: #7853c7; background: #f1eaff; }
+    .auth-tabs { display: flex; gap: 5px; margin: 21px 0 17px; padding: 4px; background: #f4f6f8; border-radius: 11px; }
+    .auth-tab { flex: 1; padding: 9px; color: var(--muted); background: transparent; border-radius: 8px; font-size: 12px; font-weight: 800; }
+    .auth-tab.active { color: var(--navy); background: #fff; box-shadow: 0 2px 8px rgba(25,52,79,.08); }
+    .field-label { display: grid; gap: 7px; margin-top: 13px; color: #667487; font-size: 11px; font-weight: 800; }
+    .field-input, .field-select, .field-textarea { width: 100%; padding: 11px 12px; color: var(--ink); background: #fff; border: 1px solid #dfe5eb; border-radius: 9px; outline: none; font-size: 13px; }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { border-color: #aebeff; box-shadow: 0 0 0 3px #eef2ff; }
+    .field-textarea { min-height: 82px; resize: vertical; line-height: 1.5; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+    .primary-btn, .secondary-btn, .danger-btn { padding: 10px 13px; border-radius: 9px; font-size: 11px; font-weight: 850; }
+    .primary-btn { color: #fff; background: var(--blue); }
+    .secondary-btn { color: var(--navy); background: #eef2f5; }
+    .danger-btn { color: #b6425b; background: #fff0f3; }
+    .auth-message { min-height: 20px; margin: 12px 0 0; color: #bd5a28; font-size: 11px; line-height: 1.5; }
+    .admin-grid { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(0, 1.1fr); gap: 18px; }
+    .admin-list { display: grid; gap: 8px; max-height: 540px; overflow: auto; }
+    .source-monitor { display: grid; gap: 8px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #eff2f4; }
+    .source-row { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8fafc; border-radius: 10px; }
+    .source-health { width: 7px; height: 7px; border-radius: 50%; background: #c4cdd5; }
+    .source-health.ok { background: var(--green); }
+    .source-health.error { background: #e66a79; }
+    .source-copy { min-width: 0; flex: 1; }
+    .source-copy strong { display: block; font-size: 11px; }
+    .source-copy small { display: block; overflow: hidden; margin-top: 3px; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
+    .source-count { color: var(--muted); font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .admin-news-copy { flex: 1; min-width: 0; }
+    .admin-news-copy strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+    .admin-news-copy small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .status-chip { padding: 5px 7px; border-radius: 6px; font-size: 9px; font-weight: 850; white-space: nowrap; }
+    .status-draft { color: #687683; background: #e9eef2; }
+    .status-review { color: #9b6b1b; background: #fff3d2; }
+    .status-published { color: #17845d; background: #dcf6eb; }
+    .admin-row-actions { display: flex; gap: 5px; }
+    .mini-btn { padding: 6px 8px; color: var(--blue); background: #eef2ff; border-radius: 7px; font-size: 10px; font-weight: 800; }
+    .mini-btn.delete { color: #b6425b; background: #fff0f3; }
+    .toast { position: fixed; z-index: 30; left: 50%; bottom: 28px; transform: translate(-50%, 20px); padding: 12px 18px; color: #fff; background: var(--navy); border-radius: 99px; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: .25s; font-size: 12px; font-weight: 700; }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .mobile-nav { display: none; }
+    @media (max-width: 1050px) {
+      .recommend-grid { grid-template-columns: repeat(2, 1fr); }
+      .recommend-card:last-child { grid-column: span 2; }
+    }
+    @media (max-width: 780px) {
+      .sidebar { display: none; }
+      main { width: 100%; margin-left: 0; padding-bottom: 75px; }
+      .topbar { padding: 18px 18px 0; }
+      .breadcrumb { font-size: 12px; }
+      .main-content { padding: 20px 18px 40px; }
+      .hero { min-height: auto; padding: 27px 22px 25px; border-radius: 21px; }
+      h1 { font-size: 28px; }
+      .hero p { font-size: 13px; }
+      .search-wrap { padding-left: 13px; }
+      .search-submit { padding: 10px 12px; }
+      .quick-searches { gap: 6px; }
+      .quick-chip { font-size: 10px; }
+      .recommend-grid, .dashboard-grid, .admin-grid { grid-template-columns: 1fr; }
+      .recommend-card:last-child { grid-column: auto; }
+      .section { margin-top: 30px; }
+      .section-heading h2 { font-size: 18px; }
+      .panel { padding: 19px; }
+      .insight-banner { align-items: flex-start; flex-direction: column; padding: 20px; }
+      .mobile-nav { position: fixed; z-index: 20; right: 0; bottom: 0; left: 0; display: flex; justify-content: space-around; padding: 9px 8px calc(9px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.95); border-top: 1px solid var(--line); backdrop-filter: blur(12px); }
+      .mobile-nav button { display: grid; gap: 3px; justify-items: center; color: #9aa5af; background: none; font-size: 10px; font-weight: 750; }
+      .mobile-nav button.active { color: var(--blue); }
+      .mobile-nav span { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#top" aria-label="AI 네비게이터 홈">
+        <span class="brand-mark">✦</span><span class="brand-name">AI <span>네비게이터</span></span>
+      </a>
+      <div class="nav-label">EXPLORE</div>
+      <nav class="side-nav">
+        <button class="nav-item active" data-scroll="top"><span class="nav-icon">⌂</span>홈</button>
+        <button class="nav-item" data-scroll="recommend"><span class="nav-icon">✦</span>AI 추천받기</button>
+        <button class="nav-item" data-scroll="directory"><span class="nav-icon">▦</span>AI 도구 탐색</button>
+        <button class="nav-item" data-scroll="news"><span class="nav-icon">◌</span>AI 뉴스·인사이트</button>
+      </nav>
+      <div class="nav-label" style="margin-top:30px">MY SPACE</div>
+      <nav class="side-nav">
+        <button class="nav-item" data-scroll="recommend" data-toast="저장한 AI는 카드의 저장됨 상태로 확인할 수 있어요."><span class="nav-icon">♡</span>저장한 목록</button>
+        <button class="nav-item" id="admin-nav" data-scroll="admin" hidden><span class="nav-icon">▣</span>뉴스 관리자</button>
+      </nav>
+      <div class="side-bottom">
+        <div class="profile-card" id="profile-card"><div class="avatar" id="profile-avatar">게</div><div><div class="profile-name" id="profile-name">게스트</div><div class="profile-type" id="profile-type">로그인하면 저장 동기화</div></div><button class="settings-btn" id="auth-action" aria-label="로그인">↗</button></div>
+      </div>
+    </aside>
+
+    <main id="top">
+      <header class="topbar"><div class="breadcrumb">월요일, 7월 20일 <span style="color:#cad2da">/</span> 오늘의 탐색 <span class="status-badge" id="data-status">데모 모드</span></div><div class="top-actions"><button class="icon-btn" data-toast="새로운 소식을 확인했어요." aria-label="알림">♢<i class="notification-dot"></i></button><button class="icon-btn" id="top-auth-action" aria-label="로그인">게</button></div></header>
+      <div class="main-content">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <div class="eyebrow"><i></i> AI DECISION COMPASS</div>
+            <h1 id="hero-title">지금 하려는 일,<br /><span style="color:var(--lime)">어떤 AI가 가장 잘할까요?</span></h1>
+            <p>막연한 “AI 뭐 쓰지?”를 끝내세요.<br />목적과 조건에 꼭 맞는 도구를 비교해서 찾아드려요.</p>
+            <form class="search-wrap" id="recommend-form">
+              <span class="search-symbol">⌕</span>
+              <input class="search-input" id="search-input" autocomplete="off" placeholder="예: 유튜브 쇼츠 영상을 만들고 싶어" aria-label="원하는 작업 입력" />
+              <button class="search-submit" type="submit">추천받기</button>
+            </form>
+            <div class="quick-searches"><button type="button" class="quick-chip">회의록 정리</button><button type="button" class="quick-chip">이미지 만들기</button><button type="button" class="quick-chip">코딩 오류 해결</button><button type="button" class="quick-chip">시장 조사하기</button></div>
+          </div>
+        </section>
+
+        <section class="section" id="recommend">
+          <div class="section-heading"><div><h2>민지님을 위한 AI 추천</h2><p id="recommend-caption">콘텐츠 제작에 자주 쓰이는 도구를 골라봤어요.</p></div><button class="link-btn" data-scroll="directory">전체 비교하기&nbsp; →</button></div>
+          <div class="recommend-grid" id="recommend-grid" aria-live="polite"></div>
+          <div class="empty" id="empty-recommend">입력한 작업에 꼭 맞는 도구를 찾는 중이에요. 아래 AI 도구 탐색에서 분야를 바꿔보세요.</div>
+        </section>
+
+        <section class="section" id="insight">
+          <div class="insight-banner"><div><h3>오늘의 인사이트 · AI를 고를 때 성능만 보지 마세요</h3><p>가격, 데이터 보안, 한국어 품질까지 함께 비교해야 진짜 효율이 올라갑니다.</p></div><button class="insight-btn" data-scroll="news">인사이트 읽기 →</button></div>
+        </section>
+
+        <section class="section" id="directory">
+          <div class="section-heading"><div><h2>AI 도구 탐색</h2><p>목적별로 검증된 AI를 찾아보세요.</p></div><button class="link-btn" data-toast="도구 제보 기능을 준비 중입니다.">도구 제보&nbsp; +</button></div>
+          <div class="directory-tools" role="tablist"><button class="filter-btn active" data-filter="all">전체</button><button class="filter-btn" data-filter="writing">글쓰기·문서</button><button class="filter-btn" data-filter="image">이미지·디자인</button><button class="filter-btn" data-filter="video">영상</button><button class="filter-btn" data-filter="research">검색·리서치</button><button class="filter-btn" data-filter="coding">코딩</button></div>
+          <div class="recommend-grid" id="directory-grid" aria-live="polite"></div>
+          <div class="empty" id="empty-directory">이 분야에는 아직 등록된 도구가 없어요.</div>
+        </section>
+
+        <section class="section" id="news">
+          <div class="section-heading"><div><h2>AI 뉴스 · 인사이트</h2><p>오늘 알아두면 좋은 소식만 짧고 쉽게 정리했어요.</p></div><button class="link-btn" data-toast="뉴스 전체 보기를 준비 중입니다.">전체 뉴스&nbsp; →</button></div>
+          <div class="dashboard-grid">
+            <div class="panel"><div class="panel-header"><div><h3 class="panel-title">오늘의 AI 브리핑 <span class="demo-badge">데모 콘텐츠</span></h3><p class="panel-subtitle">2026. 07. 20 · 5분이면 충분해요</p></div><span style="font-size:20px">◌</span></div><div class="news-list" id="news-list"></div></div>
+            <div class="panel"><div class="panel-header"><div><h3 class="panel-title">상황별 추천 바로가기</h3><p class="panel-subtitle">가장 많이 찾는 업무예요</p></div><span style="font-size:20px">✦</span></div><div class="use-case-list"><button class="use-case" data-query="회의록을 정리하고 할 일을 나누고 싶어"><span class="use-icon">📝</span><span class="use-copy"><span class="use-title">회의록 정리하기</span><span class="use-meta">요약 · 액션 아이템</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="인스타그램 콘텐츠 아이디어가 필요해"><span class="use-icon">💡</span><span class="use-copy"><span class="use-title">콘텐츠 아이디어 얻기</span><span class="use-meta">기획 · 카피 · 이미지</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="긴 PDF를 쉽게 이해하고 싶어"><span class="use-icon">📚</span><span class="use-copy"><span class="use-title">긴 문서 이해하기</span><span class="use-meta">요약 · 질문 · 번역</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="코딩 오류를 해결하고 싶어"><span class="use-icon">⌘</span><span class="use-copy"><span class="use-title">코딩 오류 해결하기</span><span class="use-meta">디버깅 · 코드 리뷰</span></span><span class="use-arrow">›</span></button></div></div>
+          </div>
+        </section>
+        <section class="section" id="admin" hidden>
+          <div class="section-heading"><div><h2>뉴스 관리자</h2><p>초안 작성부터 검수·발행까지 관리합니다.</p></div><span class="status-badge admin">ADMIN ONLY</span></div>
+          <div class="admin-grid">
+            <div class="panel">
+              <div class="panel-header"><div><h3 class="panel-title" id="admin-form-title">새 뉴스 작성</h3><p class="panel-subtitle">저장 후 상태를 검수로 바꿔 팀과 확인하세요.</p></div></div>
+              <form id="admin-news-form">
+                <input type="hidden" id="admin-news-id" />
+                <label class="field-label">제목<input class="field-input" id="admin-news-title" required maxlength="140" /></label>
+                <label class="field-label">요약<textarea class="field-textarea" id="admin-news-summary" required maxlength="400"></textarea></label>
+                <label class="field-label">인사이트<textarea class="field-textarea" id="admin-news-insight" maxlength="600"></textarea></label>
+                <label class="field-label">카테고리<input class="field-input" id="admin-news-category" placeholder="예: research, workflow" /></label>
+                <label class="field-label">라벨<input class="field-input" id="admin-news-label" value="INSIGHT" /></label>
+                <label class="field-label">출처<input class="field-input" id="admin-news-source" placeholder="공식 블로그, 연구기관 등" /></label>
+                <label class="field-label">출처 링크<input class="field-input" id="admin-news-source-url" type="url" placeholder="https://..." /></label>
+                <label class="field-label">발행일<input class="field-input" id="admin-news-date" type="date" /></label>
+                <label class="field-label">상태<select class="field-select" id="admin-news-status"><option value="draft">초안</option><option value="review">검수 중</option><option value="published">발행</option></select></label>
+                <div class="form-actions"><button class="primary-btn" type="submit">뉴스 저장</button><button class="secondary-btn" type="button" id="admin-news-reset">새 글로 초기화</button></div>
+                <p class="auth-message" id="admin-message" role="status"></p>
+              </form>
+            </div>
+            <div class="panel"><div class="panel-header"><div><h3 class="panel-title">뉴스 목록</h3><p class="panel-subtitle" id="admin-list-caption">Supabase에 저장된 콘텐츠</p></div><button class="secondary-btn" type="button" id="admin-refresh">새로고침</button></div><div class="admin-list" id="admin-news-list"></div><div class="source-monitor"><div class="panel-header" style="margin-bottom:4px"><div><h3 class="panel-title" style="font-size:13px">수집 소스 상태</h3><p class="panel-subtitle">공식 RSS · 자동 수집 결과</p></div></div><div id="admin-source-list"></div></div></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <nav class="mobile-nav"><button class="active" data-scroll="top"><span>⌂</span>홈</button><button data-scroll="recommend"><span>✦</span>추천</button><button data-scroll="directory"><span>▦</span>탐색</button><button data-scroll="news"><span>◌</span>뉴스</button></nav>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="modal" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="modal-card">
+      <div class="modal-top"><div><div class="modal-kicker">AI 네비게이터 계정</div><h3 class="modal-title" id="auth-title">로그인</h3></div><button class="modal-close" data-close-auth aria-label="닫기">×</button></div>
+      <div class="auth-tabs"><button class="auth-tab active" data-auth-mode="signin" type="button">로그인</button><button class="auth-tab" data-auth-mode="signup" type="button">회원가입</button></div>
+      <form id="auth-form"><label class="field-label">이메일<input class="field-input" id="auth-email" type="email" autocomplete="email" required placeholder="you@example.com" /></label><label class="field-label">비밀번호<input class="field-input" id="auth-password" type="password" autocomplete="current-password" required minlength="6" placeholder="6자 이상" /></label><div class="form-actions"><button class="primary-btn" id="auth-submit" type="submit">로그인</button><button class="secondary-btn" id="magic-link" type="button">이메일 링크 받기</button></div><p class="auth-message" id="auth-message" role="status"></p></form>
+    </div>
+  </div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-top"><div><div class="modal-kicker" id="modal-kicker"></div><h3 class="modal-title" id="modal-title"></h3></div><button class="modal-close" data-close-modal aria-label="닫기">×</button></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="config.local.js" onerror="this.remove()"></script>
+  <script src="data/tools.js"></script>
+  <script src="data/news.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // 기능 로직은 app.js에서 초기화합니다.
+  </script>
+</body>
+</html>

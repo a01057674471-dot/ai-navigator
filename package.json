@@ -1,0 +1,15 @@
+{
+  "name": "ai-navigator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/generate-config.mjs",
+    "build:production": "node scripts/generate-config.mjs --production",
+    "check": "node scripts/check-project.mjs",
+    "ingest": "node news-ingest.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

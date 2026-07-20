@@ -1,0 +1,14 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# generated local config
+config.local.js
+
+# dependencies and OS files
+node_modules/
+.DS_Store
+
+# local previews
+preview*.png
