@@ -421,6 +421,18 @@
     .modal-body p { margin: 7px 0; }
     .demo-note { padding: 11px 13px; color: #887243; background: #fff9e8; border-radius: 10px; font-size: 11px; }
     .modal-link { display: inline-flex; margin-top: 12px; color: var(--blue); font-size: 12px; font-weight: 850; }
+    .news-article { padding-bottom: 4px; }
+    .news-lead { margin: 0 0 22px !important; color: #465666; font-size: 15px; font-weight: 650; line-height: 1.8; }
+    .news-article-body { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .news-article-body .news-section-title { margin: 0 0 18px; color: var(--blue); font-size: 11px; letter-spacing: .04em; }
+    .news-article-body .news-body-heading { margin: 25px 0 9px; color: var(--ink); font-size: 16px; }
+    .news-article-body p { margin: 0 0 16px; color: #4f5f6f; font-size: 14px; line-height: 1.9; }
+    .news-body-list { display: grid; gap: 9px; margin: 0 0 18px; padding-left: 20px; color: #4f5f6f; font-size: 14px; line-height: 1.7; }
+    .news-insight-box, .news-source-box { margin-top: 24px; padding: 17px 18px; border-radius: 14px; }
+    .news-insight-box { background: #f2f6ff; }
+    .news-source-box { background: #f7f9fb; }
+    .news-insight-box h4, .news-source-box h4 { margin-top: 0; }
+    .news-missing-body { margin-top: 22px !important; padding: 15px; color: #887243; background: #fff9e8; border-radius: 12px; }
     .tool-detail-intro { margin: 0 0 18px; color: #5e6b77; font-size: 13px; line-height: 1.7; }
     .tool-detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; margin: 16px 0 20px; }
     .tool-detail-stat { padding: 11px 12px; background: #f7f9fc; border: 1px solid var(--line); border-radius: 10px; }
@@ -801,6 +813,7 @@
                 <input type="hidden" id="admin-news-id" />
                 <label class="field-label">제목<input class="field-input" id="admin-news-title" required maxlength="140" /></label>
                 <label class="field-label">요약<textarea class="field-textarea" id="admin-news-summary" required maxlength="400"></textarea></label>
+                <label class="field-label">전체 본문<textarea class="field-textarea news-body-input" id="admin-news-body" required maxlength="12000" rows="12" placeholder="독자가 끝까지 읽을 기사 본문을 작성하세요. 문단 제목은 ## 제목, 목록은 - 항목 형식으로 쓸 수 있어요."></textarea></label>
                 <label class="field-label">인사이트<textarea class="field-textarea" id="admin-news-insight" maxlength="600"></textarea></label>
                 <label class="field-label">카테고리<input class="field-input" id="admin-news-category" placeholder="예: research, workflow" /></label>
                 <label class="field-label">라벨<input class="field-input" id="admin-news-label" value="INSIGHT" /></label>
