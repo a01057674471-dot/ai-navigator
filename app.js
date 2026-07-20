@@ -20,7 +20,10 @@
     isAdmin: false,
     authMode: 'signin',
     remoteNews: false,
-    workflow: 'content'
+    workflow: 'content',
+    newsExpanded: false,
+    newsQuery: '',
+    newsCategory: 'all'
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -212,21 +215,66 @@
     bindCardActions();
   }
 
+  function newsItem(item, archive = false) {
+    return `<a href="${escapeHtml(item.sourceUrl)}" class="news-item ${archive ? 'news-archive-card' : ''}" data-news-id="${escapeHtml(item.id)}">
+      <div class="news-meta"><span>${escapeHtml(item.label)}</span><time>${escapeHtml(item.date)}</time></div>
+      <p class="news-title">${escapeHtml(item.title)}</p>
+      <p class="news-summary">${escapeHtml(item.summary)}</p>
+      ${archive ? '<span class="news-read">전체 내용 보기 →</span>' : ''}
+    </a>`;
+  }
+
   function renderNews() {
-    $('#news-list').innerHTML = state.news.slice(0, 3).map(item => `<a href="${escapeHtml(item.sourceUrl)}" class="news-item" data-news-id="${escapeHtml(item.id)}"><div class="news-meta">${escapeHtml(item.label)} <time>${escapeHtml(item.date)}</time></div><p class="news-title">${escapeHtml(item.title)}</p><p class="news-summary">${escapeHtml(item.summary)}</p></a>`).join('');
+    const query = state.newsQuery.trim().toLowerCase();
+    const filtered = state.news.filter(item => {
+      const categoryMatch = state.newsCategory === 'all' || item.category === state.newsCategory;
+      const text = `${item.title} ${item.summary} ${item.insight} ${item.source}`.toLowerCase();
+      return categoryMatch && (!query || text.includes(query));
+    });
+    $('#news-list').innerHTML = state.news.slice(0, 3).map(item => newsItem(item)).join('');
+    $('#news-archive-grid').innerHTML = filtered.map(item => newsItem(item, true)).join('');
+    $('#news-result-count').textContent = filtered.length;
+    $('#empty-news').style.display = filtered.length ? 'none' : 'block';
+    $('#news-archive').hidden = !state.newsExpanded;
+    $('#news-toggle').textContent = state.newsExpanded ? '간단히 보기 ↑' : `전체 뉴스 ${state.news.length}개 →`;
     $('.demo-badge').textContent = state.remoteNews ? '실시간 콘텐츠' : '데모 콘텐츠';
     $('.demo-badge').classList.toggle('connected', state.remoteNews);
     bindNewsActions();
   }
 
   function bindNewsActions() {
-    $$('.news-item').forEach(item => item.addEventListener('click', event => {
-      event.preventDefault();
-      const itemData = state.news.find(
-  entry => String(entry.id) === String(item.dataset.newsId)
-);
-      if (itemData) openNews(itemData);
-    }));
+    $$('.news-item').forEach(item => {
+      if (item.dataset.bound) return;
+      item.dataset.bound = 'true';
+      item.addEventListener('click', event => {
+        event.preventDefault();
+        const itemData = state.news.find(entry => String(entry.id) === String(item.dataset.newsId));
+        if (itemData) openNews(itemData);
+      });
+    });
+  }
+
+  function bindNewsExplorer() {
+    $('#news-toggle').addEventListener('click', () => {
+      state.newsExpanded = !state.newsExpanded;
+      renderNews();
+      if (state.newsExpanded) setTimeout(() => $('#news-archive')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+    });
+    $('#news-search').addEventListener('input', event => {
+      state.newsQuery = event.target.value;
+      renderNews();
+    });
+    $('#news-category').addEventListener('change', event => {
+      state.newsCategory = event.target.value;
+      renderNews();
+    });
+    $('#news-reset').addEventListener('click', () => {
+      state.newsQuery = '';
+      state.newsCategory = 'all';
+      $('#news-search').value = '';
+      $('#news-category').value = 'all';
+      renderNews();
+    });
   }
 
   function openNews(item) {
@@ -721,6 +769,6 @@
   }
 
   renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderNews();
-  bindNavigation(); bindSearch(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin();
+  bindNavigation(); bindSearch(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
   initBackend();
 })();
