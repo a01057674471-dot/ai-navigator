@@ -178,6 +178,20 @@
     .diagnosis-result-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
     .diagnosis-result-heading h3 { margin: 7px 0 5px; font-size: 19px; }
     .diagnosis-result-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+    .popularity-status { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: #f0f2f4; color: #7a8590; font-size: 10px; font-weight: 850; }
+    .popularity-status.live { background: #dcf6eb; color: #17845d; }
+    .popularity-filters { display: flex; gap: 7px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 3px; }
+    .popularity-list { display: grid; gap: 7px; }
+    .popularity-row { display: grid; grid-template-columns: 34px 38px minmax(150px, 1fr) auto auto; align-items: center; gap: 11px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .popularity-rank { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 9px; background: #f1f3f5; color: #7a8590; font-size: 12px; font-weight: 900; }
+    .popularity-rank.top { background: #fff0c7; color: #9a6200; }
+    .popularity-row .tool-logo { width: 38px; height: 38px; }
+    .popularity-copy { min-width: 0; }
+    .popularity-copy strong { display: block; font-size: 13px; }
+    .popularity-copy small { display: block; overflow: hidden; margin-top: 4px; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+    .popularity-metrics { display: flex; gap: 5px; }
+    .popularity-metrics span { padding: 5px 7px; border-radius: 7px; background: #f6f8fa; color: #68747f; font-size: 9px; font-weight: 750; white-space: nowrap; }
+    .popularity-note { margin: 9px 0 0; color: var(--muted); font-size: 10px; }
     .compare-page { scroll-margin-top: 20px; padding: 24px; border: 1px solid #dcd7ff; border-radius: var(--radius); background: linear-gradient(135deg, #fbfaff, #f5f8ff); }
     .compare-page[hidden] { display: none; }
     .compare-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
@@ -371,6 +385,9 @@
       .filter-select { width: 100%; min-width: 0; }
       .filter-reset { flex: 1; }
       .filter-result { margin-left: 0; text-align: right; }
+      .popularity-row { grid-template-columns: 30px 36px minmax(0, 1fr) auto; gap: 8px; }
+      .popularity-metrics { grid-column: 3 / -1; flex-wrap: wrap; }
+      .popularity-row .detail-btn { grid-column: 4; grid-row: 1; padding: 8px; }
       .compare-page { padding: 18px; }
       .compare-page-heading { align-items: stretch; flex-direction: column; }
       .compare-page-actions { width: 100%; }
@@ -420,6 +437,7 @@
         <button class="nav-item" data-scroll="recommend"><span class="nav-icon">✦</span>AI 추천받기</button>
         <button class="nav-item" data-scroll="directory"><span class="nav-icon">▦</span>AI 도구 탐색</button>
         <button class="nav-item" data-scroll="templates"><span class="nav-icon">▤</span>업무 템플릿</button>
+        <button class="nav-item" data-scroll="popularity"><span class="nav-icon">↗</span>인기 AI 순위</button>
         <button class="nav-item" data-scroll="news"><span class="nav-icon">◌</span>AI 뉴스·인사이트</button>
       </nav>
       <div class="nav-label" style="margin-top:30px">MY SPACE</div>
@@ -475,6 +493,18 @@
             <div class="diagnosis-result-heading"><div><span class="eyebrow"><i></i> DIAGNOSIS RESULT</span><h3 id="diagnosis-title">추천 결과</h3><p id="diagnosis-caption"></p></div><button class="link-btn" id="diagnosis-retry" type="button">조건 다시 선택</button></div>
             <div class="recommend-grid" id="diagnosis-grid" aria-live="polite"></div>
           </div>
+        </section>
+
+        <section class="section" id="popularity">
+          <div class="section-heading"><div><h2>인기 AI 순위</h2><p id="popularity-caption">실제 사용자가 많이 찾은 AI를 확인하세요.</p></div><span class="popularity-status" id="popularity-status">순위 준비 중</span></div>
+          <div class="popularity-filters" role="tablist" aria-label="인기 순위 조건">
+            <button class="filter-btn active" type="button" data-popularity-filter="all">종합 인기</button>
+            <button class="filter-btn" type="button" data-popularity-filter="free">무료 사용 가능</button>
+            <button class="filter-btn" type="button" data-popularity-filter="korean">한국어 우수</button>
+            <button class="filter-btn" type="button" data-popularity-filter="beginner">초보자 추천</button>
+          </div>
+          <div class="popularity-list" id="popularity-list" aria-live="polite"></div>
+          <p class="popularity-note">한 사용자의 같은 도구·행동은 하루에 한 번만 전체 순위에 반영하도록 설계했어요.</p>
         </section>
 
         <section class="section" id="recommend">
