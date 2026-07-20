@@ -23,7 +23,8 @@
     workflow: 'content',
     newsExpanded: false,
     newsQuery: '',
-    newsCategory: 'all'
+    newsCategory: 'all',
+    templateCategory: 'all'
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -122,6 +123,90 @@
     }
   ];
 
+  const workTemplates = [
+    { id:'meeting', category:'writing', icon:'📝', title:'회의록과 할 일 정리', description:'뒤섞인 회의 메모를 결정사항과 담당자별 할 일로 정리해요.', time:'약 3분', toolIds:['chatgpt','claude','notion-ai'], prompt:`아래 회의 메모를 실무자가 바로 사용할 수 있게 정리해 주세요.
+
+[회의 메모 붙여넣기]
+
+다음 순서로 작성하세요.
+1. 회의 목적과 핵심 결론 3줄
+2. 결정된 사항
+3. 할 일: 담당자 / 마감일 / 우선순위 표
+4. 아직 결정되지 않은 사항
+5. 다음 회의에서 확인할 질문
+
+메모에 없는 담당자나 날짜는 추측하지 말고 '확인 필요'라고 표시하세요.` },
+    { id:'blog', category:'writing', icon:'✍️', title:'블로그 초안 작성', description:'검색 독자를 고려한 제목부터 본문과 마무리 문구까지 만들어요.', time:'약 5분', toolIds:['chatgpt','claude','gemini'], prompt:`다음 조건으로 블로그 글 초안을 작성해 주세요.
+
+주제: [글의 주제]
+주요 독자: [누가 읽는지]
+목적: [정보 제공/제품 소개/경험 공유]
+핵심 키워드: [키워드 3개]
+원하는 말투: [친근함/전문적/간결함]
+분량: [예: 1,500자]
+
+제목 후보 5개, 목차, 본문, 핵심 요약, 독자가 다음에 할 행동 순서로 작성하세요. 확인되지 않은 사실은 만들지 마세요.` },
+    { id:'market', category:'research', icon:'⌕', title:'시장 조사 보고서', description:'출처가 있는 시장 정보와 경쟁사 차이를 한 번에 정리해요.', time:'약 15분', toolIds:['perplexity','chatgpt','notebooklm'], prompt:`다음 시장을 조사해 주세요.
+
+조사 대상: [제품 또는 시장]
+지역: [한국/글로벌/특정 국가]
+기간: [예: 최근 1년]
+조사 목적: [사업계획/마케팅/투자 검토]
+
+시장 규모와 성장 요인, 주요 고객, 경쟁사 5곳 비교, 가격대, 기회와 위험, 실행 제안 3개를 정리하세요.
+각 사실에는 출처 링크와 발표일을 표시하고, 확인된 사실과 추론을 구분하세요.` },
+    { id:'pdf', category:'research', icon:'📚', title:'긴 PDF 핵심 분석', description:'긴 보고서에서 근거·결론·실행할 일만 빠르게 찾아요.', time:'약 5분', toolIds:['notebooklm','claude','chatgpt'], prompt:`첨부한 PDF만 근거로 분석해 주세요.
+
+읽는 목적: [자료를 사용하는 목적]
+특히 확인할 내용: [관심 주제]
+
+1. 전체 내용 5줄 요약
+2. 중요한 주장과 근거가 있는 페이지
+3. 숫자와 통계 표
+4. 실무에 적용할 수 있는 내용
+5. 자료의 한계 또는 빠진 정보
+6. 추가로 확인할 질문 5개
+
+PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'이라고 표시하세요.` },
+    { id:'cardnews', category:'image', icon:'🎨', title:'카드뉴스 기획', description:'한 주제를 6장짜리 카드뉴스 구성과 이미지 지시문으로 바꿔요.', time:'약 8분', toolIds:['canva','chatgpt','firefly'], prompt:`다음 주제로 6장짜리 카드뉴스를 기획해 주세요.
+
+주제: [전달할 내용]
+대상: [주요 독자]
+목적: [정보/홍보/교육]
+브랜드 분위기: [색상과 느낌]
+
+각 장마다 제목, 40자 이내 본문, 어울리는 이미지 설명, 강조할 단어를 작성하세요.
+1장은 시선을 끄는 표지, 6장은 저장·공유·문의 중 하나의 행동을 유도하도록 구성하세요.` },
+    { id:'shorts', category:'video', icon:'▶', title:'30초 쇼츠 대본', description:'첫 3초 후킹부터 장면·자막·마무리까지 구성해요.', time:'약 7분', toolIds:['chatgpt','capcut','kling-ai'], prompt:`다음 주제로 30초 세로형 쇼츠 대본을 만들어 주세요.
+
+주제: [영상 주제]
+시청자: [대상]
+목표: [조회/정보/구매/팔로우]
+말투: [빠르고 유쾌함/차분하고 전문적]
+
+0~3초 후킹, 4~20초 핵심 내용, 21~27초 결론, 28~30초 행동 유도 순서로 작성하세요.
+각 구간에 내레이션, 화면 장면, 큰 자막, 효과음 또는 전환을 표로 표시하세요.` },
+    { id:'debug', category:'coding', icon:'⌘', title:'코딩 오류 해결', description:'오류 원인을 찾고 최소 수정과 재발 방지 테스트까지 받아요.', time:'약 10분', toolIds:['chatgpt','claude','cursor'], prompt:`다음 코드 오류를 진단해 주세요.
+
+기대했던 동작: [정상 동작]
+실제 동작: [현재 문제]
+오류 메시지: [전체 오류]
+실행 환경: [언어/프레임워크/버전]
+관련 코드:
+[코드 붙여넣기]
+
+가능성이 높은 원인을 순서대로 설명하고, 가장 작은 수정안, 수정된 코드, 확인 테스트, 같은 문제가 다시 생기지 않게 할 방법을 제시하세요.` },
+    { id:'email', category:'writing', icon:'✉️', title:'업무 이메일 작성', description:'상황에 맞는 제목과 간결하고 예의 있는 이메일을 만들어요.', time:'약 2분', toolIds:['chatgpt','claude','gemini'], prompt:`다음 상황에 맞는 업무 이메일을 작성해 주세요.
+
+받는 사람: [상대방과 관계]
+보내는 목적: [요청/안내/사과/일정 조율]
+반드시 포함할 내용: [핵심 정보]
+원하는 말투: [정중함/친근함/단호함]
+회신 마감: [날짜 또는 없음]
+
+제목 후보 3개와 300자 이내 본문을 작성하세요. 핵심 요청과 마감일이 한눈에 보이게 하고 과도한 수식어는 줄이세요.` }
+  ];
+
   function classifyQuery(value) {
     const normalized = String(value || '').toLowerCase();
     const rules = [
@@ -194,6 +279,49 @@
     $('#recommend-grid').innerHTML = ranked.map((tool, index) => toolCard(tool, index, true)).join('');
     $('#empty-recommend').style.display = ranked.length ? 'none' : 'block';
     bindCardActions();
+  }
+
+  function renderTemplates() {
+    const filtered = state.templateCategory === 'all' ? workTemplates : workTemplates.filter(item => item.category === state.templateCategory);
+    $('#template-grid').innerHTML = filtered.map(item => {
+      const names = item.toolIds.map(id => state.tools.find(tool => String(tool.id) === id)?.name || id).join(' · ');
+      return `<article class="template-card">
+        <div class="template-top"><span class="template-icon">${item.icon}</span><span class="template-time">${escapeHtml(item.time)}</span></div>
+        <h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p>
+        <div class="template-tools">추천 AI · ${escapeHtml(names)}</div>
+        <button class="template-open" type="button" data-template="${escapeHtml(item.id)}">템플릿 열기 →</button>
+      </article>`;
+    }).join('');
+    $$('#template-grid [data-template]').forEach(button => button.addEventListener('click', () => openTemplate(button.dataset.template)));
+  }
+
+  function openTemplate(id) {
+    const item = workTemplates.find(template => template.id === id);
+    if (!item) return;
+    $('#modal').classList.remove('compare-open');
+    $('#modal-title').textContent = item.title;
+    $('#modal-kicker').textContent = `${item.time} · 바로 복사해서 사용하는 업무 템플릿`;
+    const tools = item.toolIds.map(toolId => {
+      const tool = state.tools.find(entry => String(entry.id) === toolId);
+      return tool ? `<button class="template-tool-link" type="button" data-detail="${escapeHtml(tool.id)}">${escapeHtml(tool.name)} 상세 보기</button>` : '';
+    }).join('');
+    $('#modal-body').innerHTML = `<p class="tool-detail-intro">${escapeHtml(item.description)}</p>
+      <section class="tool-detail-section"><h4>추천 AI</h4><div class="template-modal-tools">${tools}</div></section>
+      <section class="tool-detail-section"><h4>복사해서 바로 사용하세요</h4>
+        <div class="prompt-box"><button class="prompt-copy-btn" type="button" data-copy-template>템플릿 복사</button><pre>${escapeHtml(item.prompt)}</pre></div>
+        <p class="prompt-help">[대괄호] 안의 내용만 내 업무에 맞게 바꾸면 됩니다.</p>
+      </section>`;
+    $('#modal').classList.add('open');
+    $('[data-copy-template]')?.addEventListener('click', () => copyPrompt(item.prompt));
+    bindCardActions();
+  }
+
+  function bindTemplates() {
+    $$('[data-template-filter]').forEach(button => button.addEventListener('click', () => {
+      state.templateCategory = button.dataset.templateFilter;
+      $$('[data-template-filter]').forEach(item => item.classList.toggle('active', item === button));
+      renderTemplates();
+    }));
   }
 
   function renderSaved() {
@@ -666,7 +794,7 @@
     } catch (error) {
       showToast('원격 데이터를 불러오지 못해 데모 데이터로 표시합니다.');
     }
-    renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderNews();
+    renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderNews();
   }
 
   async function applySession(session) {
@@ -817,7 +945,7 @@
     supabaseClient.auth.onAuthStateChange((_event, session) => { setTimeout(() => applySession(session), 0); });
   }
 
-  renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderNews();
-  bindNavigation(); bindSearch(); bindDiagnosis(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
+  renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderNews();
+  bindNavigation(); bindSearch(); bindDiagnosis(); bindTemplates(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
   initBackend();
 })();
