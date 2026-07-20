@@ -256,7 +256,7 @@
     </aside>
 
     <main id="top">
-      <header class="topbar"><div class="breadcrumb">월요일, 7월 20일 <span style="color:#cad2da">/</span> 오늘의 탐색 <span class="status-badge" id="data-status">데모 모드</span></div><div class="top-actions"><button class="icon-btn" data-toast="새로운 소식을 확인했어요." aria-label="알림">♢<i class="notification-dot"></i></button><button class="icon-btn" id="top-auth-action" aria-label="로그인">게</button></div></header>
+      <header class="topbar"><div class="breadcrumb">월요일, 7월 20일 <span style="color:#cad2da">/</span> 오늘의 탐색 <span class="status-badge" id="data-status">데모 모드</span></div><div class="top-actions"><button class="icon-btn" data-toast="새로운 소식을 확인했어요." aria-label="알림" hidden>♢<i class="notification-dot"></i></button><button class="icon-btn" id="top-auth-action" aria-label="로그인">게</button></div></header>
       <div class="main-content">
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-copy">
@@ -273,7 +273,7 @@
         </section>
 
         <section class="section" id="recommend">
-          <div class="section-heading"><div><h2>나를 위한 AI 추천</h2><p id="recommend-caption">콘텐츠 제작에 자주 쓰이는 도구를 골라봤어요.</p></div><button class="link-btn" data-scroll="directory">전체 비교하기&nbsp; →</button></div>
+          <div class="section-heading"><div><h2>나를 위한 AI 추천</h2><p id="recommend-caption">콘텐츠 제작에 자주 쓰이는 도구를 골라봤어요.</p></div><button class="link-btn" data-scroll="directory">전체 도구 보기&nbsp; →</button></div>
           <div class="recommend-grid" id="recommend-grid" aria-live="polite"></div>
           <div class="empty" id="empty-recommend">입력한 작업에 꼭 맞는 도구를 찾는 중이에요. 아래 AI 도구 탐색에서 분야를 바꿔보세요.</div>
         </section>
@@ -283,14 +283,14 @@
         </section>
 
         <section class="section" id="directory">
-          <div class="section-heading"><div><h2>AI 도구 탐색</h2><p>목적별로 검증된 AI를 찾아보세요.</p></div><button class="link-btn" data-toast="도구 제보 기능을 준비 중입니다.">도구 제보&nbsp; +</button></div>
+          <div class="section-heading"><div><h2>AI 도구 탐색</h2><p>목적별로 검증된 AI를 찾아보세요.</p></div><button class="link-btn" data-toast="도구 제보 기능을 준비 중입니다." hidden>도구 제보&nbsp; +</button></div>
           <div class="directory-tools" role="tablist"><button class="filter-btn active" data-filter="all">전체</button><button class="filter-btn" data-filter="writing">글쓰기·문서</button><button class="filter-btn" data-filter="image">이미지·디자인</button><button class="filter-btn" data-filter="video">영상</button><button class="filter-btn" data-filter="research">검색·리서치</button><button class="filter-btn" data-filter="coding">코딩</button></div>
           <div class="recommend-grid" id="directory-grid" aria-live="polite"></div>
           <div class="empty" id="empty-directory">이 분야에는 아직 등록된 도구가 없어요.</div>
         </section>
 
         <section class="section" id="news">
-          <div class="section-heading"><div><h2>AI 뉴스 · 인사이트</h2><p>오늘 알아두면 좋은 소식만 짧고 쉽게 정리했어요.</p></div><button class="link-btn" data-toast="뉴스 전체 보기를 준비 중입니다.">전체 뉴스&nbsp; →</button></div>
+          <div class="section-heading"><div><h2>AI 뉴스 · 인사이트</h2><p>오늘 알아두면 좋은 소식만 짧고 쉽게 정리했어요.</p></div><button class="link-btn" data-toast="뉴스 전체 보기를 준비 중입니다." hidden>전체 뉴스&nbsp; →</button></div>
           <div class="dashboard-grid">
             <div class="panel"><div class="panel-header"><div><h3 class="panel-title">오늘의 AI 브리핑 <span class="demo-badge">데모 콘텐츠</span></h3><p class="panel-subtitle">2026. 07. 20 · 5분이면 충분해요</p></div><span style="font-size:20px">◌</span></div><div class="news-list" id="news-list"></div></div>
             <div class="panel"><div class="panel-header"><div><h3 class="panel-title">상황별 추천 바로가기</h3><p class="panel-subtitle">가장 많이 찾는 업무예요</p></div><span style="font-size:20px">✦</span></div><div class="use-case-list"><button class="use-case" data-query="회의록을 정리하고 할 일을 나누고 싶어"><span class="use-icon">📝</span><span class="use-copy"><span class="use-title">회의록 정리하기</span><span class="use-meta">요약 · 액션 아이템</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="인스타그램 콘텐츠 아이디어가 필요해"><span class="use-icon">💡</span><span class="use-copy"><span class="use-title">콘텐츠 아이디어 얻기</span><span class="use-meta">기획 · 카피 · 이미지</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="긴 PDF를 쉽게 이해하고 싶어"><span class="use-icon">📚</span><span class="use-copy"><span class="use-title">긴 문서 이해하기</span><span class="use-meta">요약 · 질문 · 번역</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="코딩 오류를 해결하고 싶어"><span class="use-icon">⌘</span><span class="use-copy"><span class="use-title">코딩 오류 해결하기</span><span class="use-meta">디버깅 · 코드 리뷰</span></span><span class="use-arrow">›</span></button></div></div>
