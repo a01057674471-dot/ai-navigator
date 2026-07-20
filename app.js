@@ -28,7 +28,11 @@
     popularity: new Map(),
     popularityLive: false,
     popularityFilter: 'all',
-    localPopularity: JSON.parse(localStorage.getItem('ai-navigator-popularity') || '{}')
+    localPopularity: JSON.parse(localStorage.getItem('ai-navigator-popularity') || '{}'),
+    updates: [],
+    updatesLive: false,
+    updateFilter: 'all',
+    readUpdates: new Set(JSON.parse(localStorage.getItem('ai-navigator-read-updates') || '[]'))
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -74,7 +78,7 @@
       id: row.id, name: row.name, maker: row.maker, logo: row.logo || '✦', logoClass: row.logo_class || 'logo-blue',
       categories: row.categories || [], bestFor: row.best_for || [], keywords: row.keywords || [],
       quality: row.quality ?? 3, korean: row.korean ?? 3, speed: row.speed ?? 3, privacy: row.privacy ?? 3, ease: row.ease ?? 3, costFit: row.cost_fit ?? 3,
-      price: row.price || '정보 확인 필요', priceType: row.price_type || 'unknown', freeLimit: row.free_limit || '', strengths: row.strengths || [], reason: row.reason || '업무 조건에 맞는지 직접 비교해 보세요.', description: row.description || '', officialUrl: row.official_url || '#', verifiedAt: row.verified_at || '검증일 미정'
+      price: row.price || '정보 확인 필요', priceType: row.price_type || 'unknown', freeLimit: row.free_limit || '', strengths: row.strengths || [], reason: row.reason || '업무 조건에 맞는지 직접 비교해 보세요.', description: row.description || '', officialUrl: row.official_url || '#', verifiedAt: row.verified_at || '검증일 미정', createdAt: row.created_at || null
     };
   }
   function mapNews(row) {
@@ -470,6 +474,104 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     }));
   }
 
+  const updateTypes = {
+    new_tool: { icon:'✦', label:'신규 AI', className:'new' },
+    price_change: { icon:'₩', label:'가격 변경', className:'price' },
+    free_limit_change: { icon:'◎', label:'무료 범위', className:'free' }
+  };
+
+  function updateDate(value) {
+    if (!value) return '날짜 미정';
+    return new Intl.DateTimeFormat('ko-KR', { month:'numeric', day:'numeric' }).format(new Date(value));
+  }
+
+  function fallbackToolUpdates() {
+    const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    return state.tools.filter(tool => tool.createdAt && new Date(tool.createdAt).getTime() >= cutoff).map(tool => ({
+      id: `new-${tool.id}`, tool_id: tool.id, update_type:'new_tool',
+      title: `${tool.name}이 AI 네비게이터에 새로 등록됐어요.`,
+      summary:'가격·한국어·난이도 정보를 확인하고 비교해 보세요.',
+      old_value:null, new_value:tool.price, created_at:tool.createdAt
+    }));
+  }
+
+  function renderUpdates() {
+    let updates = [...state.updates];
+    if (state.updateFilter === 'saved') updates = updates.filter(item => state.saved.has(item.tool_id));
+    if (state.updateFilter === 'price') updates = updates.filter(item => item.update_type === 'price_change' || item.update_type === 'free_limit_change');
+    if (state.updateFilter === 'new') updates = updates.filter(item => item.update_type === 'new_tool');
+    updates.sort((a, b) => {
+      const unread = Number(!state.readUpdates.has(String(b.id))) - Number(!state.readUpdates.has(String(a.id)));
+      if (unread) return unread;
+      const saved = Number(state.saved.has(b.tool_id)) - Number(state.saved.has(a.tool_id));
+      return saved || new Date(b.created_at) - new Date(a.created_at);
+    });
+    const unreadCount = state.updates.filter(item => !state.readUpdates.has(String(item.id))).length;
+    $('#update-count').textContent = unreadCount > 99 ? '99+' : unreadCount;
+    $('#update-count').hidden = unreadCount === 0;
+    $('#updates-status').textContent = state.updatesLive ? '자동 변경 감지 중' : '신규 등록 정보 표시 중';
+    $('#updates-status').classList.toggle('live', state.updatesLive);
+    $('#updates-list').innerHTML = updates.map(item => {
+      const tool = state.tools.find(entry => String(entry.id) === String(item.tool_id));
+      const meta = updateTypes[item.update_type] || updateTypes.new_tool;
+      const unread = !state.readUpdates.has(String(item.id));
+      const change = item.old_value || item.new_value ? `<div class="update-change">${item.old_value ? `<del>${escapeHtml(item.old_value)}</del><b>→</b>` : ''}<strong>${escapeHtml(item.new_value || '새 정보 확인')}</strong></div>` : '';
+      return `<article class="update-item ${unread ? 'unread' : ''}" data-update-id="${escapeHtml(item.id)}">
+        <span class="update-icon ${meta.className}">${meta.icon}</span>
+        <div class="update-copy"><div class="update-meta"><span>${meta.label}</span><time>${updateDate(item.created_at)}</time>${state.saved.has(item.tool_id) ? '<em>저장한 AI</em>' : ''}</div>
+          <h3>${escapeHtml(item.title || (tool ? displayToolName(tool) : 'AI 업데이트'))}</h3>
+          <p>${escapeHtml(item.summary || '변경된 내용을 확인해 보세요.')}</p>${change}
+        </div>
+        <div class="update-actions">${tool ? `<button type="button" data-update-tool="${escapeHtml(tool.id)}">상세 보기</button>` : ''}${unread ? `<button type="button" class="read-btn" data-mark-update="${escapeHtml(item.id)}">읽음</button>` : ''}</div>
+      </article>`;
+    }).join('');
+    $('#empty-updates').style.display = updates.length ? 'none' : 'block';
+    $$('#updates-list [data-mark-update]').forEach(button => button.addEventListener('click', () => markUpdateRead(button.dataset.markUpdate)));
+    $$('#updates-list [data-update-tool]').forEach(button => button.addEventListener('click', () => {
+      const update = button.closest('[data-update-id]');
+      if (update) markUpdateRead(update.dataset.updateId, false);
+      const tool = state.tools.find(item => String(item.id) === String(button.dataset.updateTool));
+      if (tool) openTool(tool);
+    }));
+  }
+
+  function saveReadUpdates() {
+    localStorage.setItem('ai-navigator-read-updates', JSON.stringify([...state.readUpdates].slice(-200)));
+  }
+
+  function markUpdateRead(id, rerender = true) {
+    state.readUpdates.add(String(id));
+    saveReadUpdates();
+    if (rerender) renderUpdates();
+  }
+
+  async function loadToolUpdates() {
+    state.updatesLive = false;
+    state.updates = [];
+    if (supabaseClient) {
+      try {
+        const { data, error } = await supabaseClient.from('tool_updates').select('*').order('created_at', { ascending:false }).limit(50);
+        if (error) throw error;
+        state.updates = data || [];
+        state.updatesLive = true;
+      } catch (error) { state.updatesLive = false; }
+    }
+    if (!state.updates.length) state.updates = fallbackToolUpdates();
+    renderUpdates();
+  }
+
+  function bindUpdates() {
+    $$('[data-update-filter]').forEach(button => button.addEventListener('click', () => {
+      state.updateFilter = button.dataset.updateFilter;
+      $$('[data-update-filter]').forEach(item => item.classList.toggle('active', item === button));
+      renderUpdates();
+    }));
+    $('#mark-all-updates').addEventListener('click', () => {
+      state.updates.forEach(item => state.readUpdates.add(String(item.id)));
+      saveReadUpdates(); renderUpdates(); showToast('업데이트를 모두 읽음 처리했어요.');
+    });
+  }
+
   function renderSaved() {
     const savedTools = state.tools.filter(tool => state.saved.has(tool.id));
     $('#saved-grid').innerHTML = savedTools.map((tool, index) => toolCard(tool, index)).join('');
@@ -839,7 +941,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
       showToast('로그인하면 저장 목록이 여러 기기에서 동기화돼요.');
     }
     showToast(saving ? 'AI 도구를 저장했어요.' : '저장 목록에서 삭제했어요.');
-    renderRecommendations(); renderDirectory(); renderSaved();
+    renderRecommendations(); renderDirectory(); renderSaved(); renderUpdates();
   }
 
   function renderCompareTray() {
@@ -1035,7 +1137,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     const { data, error } = await supabaseClient.from('saved_tools').select('tool_id').eq('user_id', state.user.id);
     if (error) { showToast('저장 목록을 불러오지 못했어요.'); return; }
     state.saved = new Set((data || []).map(row => row.tool_id));
-    saveLocalState(); renderRecommendations(); renderDirectory(); renderSaved();
+    saveLocalState(); renderRecommendations(); renderDirectory(); renderSaved(); renderUpdates();
   }
 
   async function loadPublicData() {
@@ -1051,8 +1153,8 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     } catch (error) {
       showToast('원격 데이터를 불러오지 못해 데모 데이터로 표시합니다.');
     }
-    renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderPopularity(); renderNews();
-    await loadPopularity();
+    renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderPopularity(); renderUpdates(); renderNews();
+    await Promise.all([loadPopularity(), loadToolUpdates()]);
   }
 
   async function applySession(session) {
@@ -1203,7 +1305,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     supabaseClient.auth.onAuthStateChange((_event, session) => { setTimeout(() => applySession(session), 0); });
   }
 
-  renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderPopularity(); renderNews();
-  bindNavigation(); bindSearch(); bindDiagnosis(); bindTemplates(); bindPopularity(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
+  renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderPopularity(); renderUpdates(); renderNews();
+  bindNavigation(); bindSearch(); bindDiagnosis(); bindTemplates(); bindPopularity(); bindUpdates(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
   initBackend();
 })();
