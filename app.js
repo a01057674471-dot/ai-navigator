@@ -11,6 +11,8 @@
     category: 'all',
     priceFilter: 'all',
     koreanFilter: 'all',
+    directoryQuery: '',
+    directorySort: 'recommended',
     saved: new Set(JSON.parse(localStorage.getItem('ai-navigator-saved') || '[]')),
     compare: new Set(),
     weights: { fit: 40, quality: 20, cost: 15, korean: 10, speed: 5, privacy: 10 },
@@ -811,14 +813,38 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     }));
   }
 
+  function directoryRecommendationScore(tool) {
+    return Number(tool.quality) * 4 + Number(tool.ease) * 2 + Number(tool.korean) * 2 + Number(tool.costFit) + Number(tool.privacy);
+  }
+
   function renderDirectory() {
-    let filtered = state.category === 'all' ? state.tools : state.tools.filter(tool => tool.categories.includes(state.category));
-    if (state.priceFilter === 'free') filtered = filtered.filter(tool => tool.priceType === 'free' || tool.priceType === 'freemium');
+    const query = state.directoryQuery.trim().toLowerCase();
+    let filtered = state.category === 'all' ? [...state.tools] : state.tools.filter(tool => tool.categories.includes(state.category));
+    if (state.priceFilter === 'free') filtered = filtered.filter(tool => isFreeEligible(tool));
     if (state.priceFilter === 'paid') filtered = filtered.filter(tool => tool.priceType === 'paid');
     if (state.koreanFilter !== 'all') filtered = filtered.filter(tool => Number(tool.korean) >= Number(state.koreanFilter));
+    if (query) {
+      filtered = filtered.filter(tool => {
+        const searchable = [
+          tool.name, koreanToolName(tool), tool.maker, tool.description, tool.reason, tool.price, tool.freeLimit,
+          ...(tool.categories || []), ...(tool.bestFor || []), ...(tool.keywords || []), ...(tool.strengths || [])
+        ].join(' ').toLowerCase();
+        return query.split(/\s+/).filter(Boolean).every(word => searchable.includes(word));
+      });
+    }
+
+    const recommended = (a, b) => directoryRecommendationScore(b) - directoryRecommendationScore(a) || b.quality - a.quality || a.name.localeCompare(b.name);
+    if (state.directorySort === 'free') filtered.sort((a, b) => Number(!isFreeEligible(a)) - Number(!isFreeEligible(b)) || b.costFit - a.costFit || recommended(a, b));
+    else if (state.directorySort === 'korean') filtered.sort((a, b) => b.korean - a.korean || recommended(a, b));
+    else if (state.directorySort === 'beginner') filtered.sort((a, b) => b.ease - a.ease || recommended(a, b));
+    else if (state.directorySort === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+    else filtered.sort(recommended);
+
     $('#directory-grid').innerHTML = filtered.map((tool, index) => toolCard(tool, index)).join('');
     $('#filter-count').textContent = filtered.length;
-    $('#empty-directory').textContent = '선택한 조건에 맞는 AI 도구가 없어요. 필터를 초기화하거나 조건을 낮춰보세요.';
+    $('#empty-directory').textContent = query
+      ? `“${state.directoryQuery.trim()}” 검색 결과가 없어요. 더 짧은 단어나 다른 업무 표현으로 검색해 보세요.`
+      : '선택한 조건에 맞는 AI 도구가 없어요. 필터를 초기화하거나 조건을 낮춰보세요.';
     $('#empty-directory').style.display = filtered.length ? 'none' : 'block';
     bindCardActions();
   }
@@ -1359,13 +1385,15 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     $$('[data-filter]').forEach(button => button.addEventListener('click', () => {
       $$('[data-filter]').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.category = button.dataset.filter; renderDirectory();
     }));
+    $('#directory-search').addEventListener('input', event => { state.directoryQuery = event.target.value; renderDirectory(); });
+    $('#directory-sort').addEventListener('change', event => { state.directorySort = event.target.value; renderDirectory(); });
     $('#price-filter').addEventListener('change', event => { state.priceFilter = event.target.value; renderDirectory(); });
     $('#korean-filter').addEventListener('change', event => { state.koreanFilter = event.target.value; renderDirectory(); });
     $('#filter-reset').addEventListener('click', () => {
-      state.category = 'all'; state.priceFilter = 'all'; state.koreanFilter = 'all';
+      state.category = 'all'; state.priceFilter = 'all'; state.koreanFilter = 'all'; state.directoryQuery = ''; state.directorySort = 'recommended';
       $$('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
-      $('#price-filter').value = 'all'; $('#korean-filter').value = 'all';
-      renderDirectory(); showToast('필터를 초기화했어요.');
+      $('#directory-search').value = ''; $('#directory-sort').value = 'recommended'; $('#price-filter').value = 'all'; $('#korean-filter').value = 'all';
+      renderDirectory(); showToast('검색과 필터를 초기화했어요.');
     });
   }
 
