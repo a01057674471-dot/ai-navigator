@@ -203,6 +203,10 @@
     .tool-detail-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 21px; padding-top: 17px; border-top: 1px solid var(--line); }
     .tool-detail-verified { color: var(--muted); font-size: 10px; }
     .tool-detail-link { display: inline-flex; padding: 10px 13px; color: #fff; background: var(--blue); border-radius: 9px; font-size: 11px; font-weight: 850; }
+    .prompt-box { position: relative; padding: 15px; color: #dce8f5; background: var(--navy); border-radius: 12px; }
+    .prompt-box pre { margin: 0; padding-right: 90px; color: inherit; white-space: pre-wrap; word-break: keep-all; font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 11px; line-height: 1.65; }
+    .prompt-copy-btn { position: absolute; top: 11px; right: 11px; padding: 8px 10px; color: var(--navy); background: var(--lime); border-radius: 8px; font-size: 9px; font-weight: 900; }
+    .prompt-help { margin: 8px 0 0; color: var(--muted); font-size: 10px; }
     .status-badge { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 4px 7px; color: #637181; background: #f3f6f8; border-radius: 6px; font-size: 9px; font-weight: 800; vertical-align: middle; }
     .status-badge.connected { color: #17845d; background: #e7f8f0; }
     .status-badge.admin { color: #7853c7; background: #f1eaff; }
@@ -262,6 +266,7 @@
       .quick-chip { font-size: 10px; }
       .advanced-filters { align-items: stretch; padding: 12px; }
       .tool-detail-grid { grid-template-columns: 1fr 1fr; }
+      .prompt-box pre { padding: 38px 0 0; }
       .filter-field { min-width: calc(50% - 5px); flex: 1; }
       .filter-select { width: 100%; min-width: 0; }
       .filter-reset { flex: 1; }
