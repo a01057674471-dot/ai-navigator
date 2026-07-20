@@ -165,6 +165,17 @@
     bindCardActions();
   }
 
+  function renderSaved() {
+    const savedTools = state.tools.filter(tool => state.saved.has(tool.id));
+    $('#saved-grid').innerHTML = savedTools.map((tool, index) => toolCard(tool, index)).join('');
+    $('#saved-count').textContent = savedTools.length;
+    $('#saved-caption').textContent = state.user
+      ? `${savedTools.length}개 저장됨 · 계정에 안전하게 동기화됩니다.`
+      : `${savedTools.length}개 저장됨 · 현재 브라우저에 저장됩니다.`;
+    $('#empty-saved').style.display = savedTools.length ? 'none' : 'block';
+    bindCardActions();
+  }
+
   function renderWorkflow() {
     const workflow = workflows.find(item => item.id === state.workflow) || workflows[0];
     $('#workflow-tabs').innerHTML = workflows.map(item => `<button class="workflow-tab ${item.id === workflow.id ? 'active' : ''}" type="button" role="tab" aria-selected="${item.id === workflow.id}" data-workflow="${escapeHtml(item.id)}">${escapeHtml(item.icon)}&nbsp; ${escapeHtml(item.label)}</button>`).join('');
@@ -400,7 +411,7 @@
       showToast('로그인하면 저장 목록이 여러 기기에서 동기화돼요.');
     }
     showToast(saving ? 'AI 도구를 저장했어요.' : '저장 목록에서 삭제했어요.');
-    renderRecommendations(); renderDirectory();
+    renderRecommendations(); renderDirectory(); renderSaved();
   }
 
   function renderCompareTray() {
@@ -418,12 +429,12 @@
       if (state.compare.size >= 3) { showToast('AI는 최대 3개까지 비교할 수 있어요.'); return; }
       state.compare.add(id);
     }
-    renderRecommendations(); renderDirectory(); renderCompareTray();
+    renderRecommendations(); renderDirectory(); renderSaved(); renderCompareTray();
   }
 
   function clearCompare() {
     state.compare.clear();
-    renderRecommendations(); renderDirectory(); renderCompareTray();
+    renderRecommendations(); renderDirectory(); renderSaved(); renderCompareTray();
   }
 
   function easeLabel(value) {
@@ -534,6 +545,7 @@
     $('#auth-action').setAttribute('aria-label', user ? '로그아웃' : '로그인');
     $('#admin-nav').hidden = !state.isAdmin;
     $('#admin').hidden = !state.isAdmin;
+    renderSaved();
   }
 
   async function syncSavedFromCloud() {
@@ -541,7 +553,7 @@
     const { data, error } = await supabaseClient.from('saved_tools').select('tool_id').eq('user_id', state.user.id);
     if (error) { showToast('저장 목록을 불러오지 못했어요.'); return; }
     state.saved = new Set((data || []).map(row => row.tool_id));
-    saveLocalState(); renderRecommendations(); renderDirectory();
+    saveLocalState(); renderRecommendations(); renderDirectory(); renderSaved();
   }
 
   async function loadPublicData() {
@@ -557,7 +569,7 @@
     } catch (error) {
       showToast('원격 데이터를 불러오지 못해 데모 데이터로 표시합니다.');
     }
-    renderRecommendations(); renderDirectory(); renderWorkflow(); renderNews();
+    renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderNews();
   }
 
   async function applySession(session) {
@@ -708,7 +720,7 @@
     supabaseClient.auth.onAuthStateChange((_event, session) => { setTimeout(() => applySession(session), 0); });
   }
 
-  renderRecommendations(); renderDirectory(); renderWorkflow(); renderNews();
+  renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderNews();
   bindNavigation(); bindSearch(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin();
   initBackend();
 })();
