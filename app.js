@@ -19,7 +19,8 @@
     connected: Boolean(supabaseClient),
     isAdmin: false,
     authMode: 'signin',
-    remoteNews: false
+    remoteNews: false,
+    workflow: 'content'
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -75,6 +76,49 @@
     design: { caption: '발표자료와 시각 결과물을 빠르게 만드는 데 맞는 도구예요.', label: '디자인' }
   };
 
+  const workflows = [
+    {
+      id: 'content', icon: '✦', label: '콘텐츠 제작', title: '아이디어에서 게시물까지',
+      description: '기획, 디자인, 편집을 세 도구로 나눠 결과물의 완성도를 높여요.', time: '약 30~60분',
+      tip: 'ChatGPT에서 만든 문구를 Canva에 붙여 넣고, 완성된 이미지를 CapCut 영상 소재로 활용하세요.',
+      steps: [
+        { toolId: 'chatgpt', role: '주제·구성·게시물 문구 만들기' },
+        { toolId: 'canva', role: '카드뉴스와 썸네일 디자인' },
+        { toolId: 'capcut', role: '짧은 영상과 자막으로 마무리' }
+      ]
+    },
+    {
+      id: 'research', icon: '⌕', label: '시장 조사', title: '자료 찾기에서 보고서까지',
+      description: '최신 출처를 찾고, 긴 자료를 검토한 뒤 보고서로 정리해요.', time: '약 40~90분',
+      tip: 'Perplexity의 출처 링크를 먼저 확인한 뒤 NotebookLM에 신뢰할 자료만 넣으면 오류를 줄일 수 있어요.',
+      steps: [
+        { toolId: 'perplexity', role: '최신 정보와 출처 빠르게 찾기' },
+        { toolId: 'notebooklm', role: '수집한 자료를 근거 중심으로 분석' },
+        { toolId: 'chatgpt', role: '결론·표·실행안이 있는 보고서 작성' }
+      ]
+    },
+    {
+      id: 'shorts', icon: '▶', label: '숏폼 영상', title: '대본에서 세로 영상까지',
+      description: '짧은 대본, 영상 장면, 자막 편집 순서로 숏폼을 완성해요.', time: '약 30~80분',
+      tip: '같은 인물과 분위기를 유지하도록 대본의 장면 설명을 Kling AI 프롬프트에 그대로 이어 쓰세요.',
+      steps: [
+        { toolId: 'chatgpt', role: '15~30초 대본과 장면표 작성' },
+        { toolId: 'kling-ai', role: '세로 9:16 영상 장면 생성' },
+        { toolId: 'capcut', role: '자막·음악·장면 전환 편집' }
+      ]
+    },
+    {
+      id: 'coding', icon: '⌘', label: '코딩', title: '기획에서 배포 가능한 코드까지',
+      description: '요구사항을 정리하고, 코드를 작성한 뒤 오류와 품질을 점검해요.', time: '작업별 상이',
+      tip: 'Cursor에는 한 번에 큰 기능을 맡기기보다 파일 하나와 완료 조건을 함께 알려주는 것이 좋아요.',
+      steps: [
+        { toolId: 'chatgpt', role: '요구사항·화면·완료 조건 정리' },
+        { toolId: 'cursor', role: '프로젝트 안에서 코드 구현' },
+        { toolId: 'github-copilot', role: '코드 보완·테스트·리뷰 지원' }
+      ]
+    }
+  ];
+
   function classifyQuery(value) {
     const normalized = String(value || '').toLowerCase();
     const rules = [
@@ -119,6 +163,30 @@
     $('#recommend-grid').innerHTML = ranked.map((tool, index) => toolCard(tool, index, true)).join('');
     $('#empty-recommend').style.display = ranked.length ? 'none' : 'block';
     bindCardActions();
+  }
+
+  function renderWorkflow() {
+    const workflow = workflows.find(item => item.id === state.workflow) || workflows[0];
+    $('#workflow-tabs').innerHTML = workflows.map(item => `<button class="workflow-tab ${item.id === workflow.id ? 'active' : ''}" type="button" role="tab" aria-selected="${item.id === workflow.id}" data-workflow="${escapeHtml(item.id)}">${escapeHtml(item.icon)}&nbsp; ${escapeHtml(item.label)}</button>`).join('');
+    const steps = workflow.steps.map((step, index) => {
+      const tool = state.tools.find(item => String(item.id) === String(step.toolId));
+      const name = tool?.name || step.toolId;
+      return `<button class="workflow-step" type="button" data-detail="${escapeHtml(step.toolId)}">
+        <span class="workflow-number">STEP ${index + 1}</span>
+        <span class="workflow-tool">${escapeHtml(name)}</span>
+        <span class="workflow-role">${escapeHtml(step.role)}</span>
+      </button>`;
+    }).join('');
+    $('#workflow-result').innerHTML = `<article class="workflow-card">
+      <div class="workflow-summary"><div><h3>${escapeHtml(workflow.title)}</h3><p>${escapeHtml(workflow.description)}</p></div><span class="workflow-time">${escapeHtml(workflow.time)}</span></div>
+      <div class="workflow-steps">${steps}</div>
+      <p class="workflow-tip"><strong>사용 팁</strong> · ${escapeHtml(workflow.tip)}</p>
+    </article>`;
+    bindCardActions();
+    $$('#workflow-tabs [data-workflow]').forEach(button => button.addEventListener('click', () => {
+      state.workflow = button.dataset.workflow;
+      renderWorkflow();
+    }));
   }
 
   function renderDirectory() {
@@ -489,7 +557,7 @@
     } catch (error) {
       showToast('원격 데이터를 불러오지 못해 데모 데이터로 표시합니다.');
     }
-    renderRecommendations(); renderDirectory(); renderNews();
+    renderRecommendations(); renderDirectory(); renderWorkflow(); renderNews();
   }
 
   async function applySession(session) {
@@ -640,7 +708,7 @@
     supabaseClient.auth.onAuthStateChange((_event, session) => { setTimeout(() => applySession(session), 0); });
   }
 
-  renderRecommendations(); renderDirectory(); renderNews();
+  renderRecommendations(); renderDirectory(); renderWorkflow(); renderNews();
   bindNavigation(); bindSearch(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin();
   initBackend();
 })();
