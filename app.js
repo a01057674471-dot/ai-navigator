@@ -9,6 +9,8 @@
     news: localNews,
     query: '',
     category: 'all',
+    priceFilter: 'all',
+    koreanFilter: 'all',
     saved: new Set(JSON.parse(localStorage.getItem('ai-navigator-saved') || '[]')),
     compare: new Set(),
     weights: { fit: 40, quality: 20, cost: 15, korean: 10, speed: 5, privacy: 10 },
@@ -120,8 +122,13 @@
   }
 
   function renderDirectory() {
-    const filtered = state.category === 'all' ? state.tools : state.tools.filter(tool => tool.categories.includes(state.category));
+    let filtered = state.category === 'all' ? state.tools : state.tools.filter(tool => tool.categories.includes(state.category));
+    if (state.priceFilter === 'free') filtered = filtered.filter(tool => tool.priceType === 'free' || tool.priceType === 'freemium');
+    if (state.priceFilter === 'paid') filtered = filtered.filter(tool => tool.priceType === 'paid');
+    if (state.koreanFilter !== 'all') filtered = filtered.filter(tool => Number(tool.korean) >= Number(state.koreanFilter));
     $('#directory-grid').innerHTML = filtered.map((tool, index) => toolCard(tool, index)).join('');
+    $('#filter-count').textContent = filtered.length;
+    $('#empty-directory').textContent = '선택한 조건에 맞는 AI 도구가 없어요. 필터를 초기화하거나 조건을 낮춰보세요.';
     $('#empty-directory').style.display = filtered.length ? 'none' : 'block';
     bindCardActions();
   }
@@ -278,9 +285,17 @@
   }
 
   function bindFilters() {
-    $$('.filter-btn').forEach(button => button.addEventListener('click', () => {
-      $$('.filter-btn').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.category = button.dataset.filter; renderDirectory();
+    $('.filter-btn').forEach(button => button.addEventListener('click', () => {
+      $('.filter-btn').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.category = button.dataset.filter; renderDirectory();
     }));
+    $('#price-filter').addEventListener('change', event => { state.priceFilter = event.target.value; renderDirectory(); });
+    $('#korean-filter').addEventListener('change', event => { state.koreanFilter = event.target.value; renderDirectory(); });
+    $('#filter-reset').addEventListener('click', () => {
+      state.category = 'all'; state.priceFilter = 'all'; state.koreanFilter = 'all';
+      $('.filter-btn').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+      $('#price-filter').value = 'all'; $('#korean-filter').value = 'all';
+      renderDirectory(); showToast('필터를 초기화했어요.');
+    });
   }
 
   function bindModal() {
