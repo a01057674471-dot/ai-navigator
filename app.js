@@ -69,6 +69,9 @@
     document.body.dataset.view = isHome ? 'home' : id;
     const navButtons = $$('.nav-item, .mobile-nav button');
     navButtons.forEach(button => button.classList.toggle('active', button.dataset.scroll === (isHome && id === 'top' ? 'top' : id)));
+    document.querySelectorAll('.nav-more').forEach(details => {
+      if (details.querySelector('.nav-item.active')) details.open = true;
+    });
   }
 
   function scrollToId(id) {
