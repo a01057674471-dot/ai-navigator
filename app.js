@@ -10,6 +10,7 @@
     query: '',
     category: 'all',
     saved: new Set(JSON.parse(localStorage.getItem('ai-navigator-saved') || '[]')),
+    compare: new Set(),
     weights: { fit: 40, quality: 20, cost: 15, korean: 10, speed: 5, privacy: 10 },
     user: null,
     profile: null,
@@ -105,7 +106,7 @@
       ${recommendation ? `<span class="rank">${String(index + 1).padStart(2, '0')}</span>` : ''}
       <div class="tool-head"><div class="tool-logo ${escapeHtml(tool.logoClass)}">${escapeHtml(tool.logo)}</div><div><div class="tool-title">${escapeHtml(tool.name)}</div><div class="tool-maker">${escapeHtml(tool.maker)}</div></div></div>
       ${match}${reason}<div class="tag-row">${tags}</div>
-      <div class="card-footer"><span class="price">${escapeHtml(tool.price)}</span><div class="card-actions"><button class="save-btn ${saved ? 'saved' : ''}" data-save="${escapeHtml(tool.id)}" aria-label="${saved ? '저장 취소' : '저장'}">${saved ? '♥ 저장됨' : '♡ 저장'}</button><button class="detail-btn" data-detail="${escapeHtml(tool.id)}">상세 보기</button></div></div>
+      <div class="card-footer"><span class="price">${escapeHtml(tool.price)}</span><div class="card-actions"><button class="compare-btn ${state.compare.has(tool.id) ? 'selected' : ''}" data-compare="${escapeHtml(tool.id)}">${state.compare.has(tool.id) ? '✓ 비교중' : '+ 비교'}</button><button class="save-btn ${saved ? 'saved' : ''}" data-save="${escapeHtml(tool.id)}" aria-label="${saved ? '저장 취소' : '저장'}">${saved ? '♥ 저장됨' : '♡ 저장'}</button><button class="detail-btn" data-detail="${escapeHtml(tool.id)}">상세 보기</button></div></div>
     </article>`;
   }
 
@@ -143,6 +144,7 @@
   }
 
   function openNews(item) {
+    $('#modal').classList.remove('compare-open');
     $('#modal-title').textContent = item.title;
     $('#modal-kicker').textContent = `${item.label} · ${item.date}`;
     $('#modal-body').innerHTML = `<p>${escapeHtml(item.summary)}</p><h4>왜 중요한가</h4><p>${escapeHtml(item.insight)}</p><h4>출처</h4><p>${escapeHtml(item.source)}</p>${!state.remoteNews ? '<p class="demo-note">현재 뉴스는 화면 검증을 위한 데모 콘텐츠입니다. Supabase를 연결하면 관리자 검수 후 발행된 뉴스가 표시됩니다.</p>' : ''}${item.sourceUrl !== '#' ? `<a class="modal-link" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noreferrer">원문 출처 열기 →</a>` : ''}`;
@@ -150,6 +152,7 @@
   }
 
   function openTool(tool) {
+    $('#modal').classList.remove('compare-open');
     $('#modal-title').textContent = tool.name;
     $('#modal-kicker').textContent = `${tool.maker} · ${tool.verifiedAt}`;
     $('#modal-body').innerHTML = `<p>${escapeHtml(tool.description)}</p><h4>잘하는 일</h4><p>${escapeHtml(tool.bestFor.join(' · '))}</p><h4>사용 조건</h4><p>한국어 ${tool.korean}/5 · 품질 ${tool.quality}/5 · 속도 ${tool.speed}/5 · 보안 고려 ${tool.privacy}/5</p><p class="demo-note">가격과 기능은 변경될 수 있습니다. 공식 페이지에서 최신 정보를 확인하세요.</p><a class="modal-link" href="${escapeHtml(tool.officialUrl)}" target="_blank" rel="noreferrer">공식 사이트 열기 →</a>`;
@@ -182,8 +185,69 @@
     renderRecommendations(); renderDirectory();
   }
 
+  function renderCompareTray() {
+    const selected = state.tools.filter(tool => state.compare.has(tool.id));
+    $('#compare-tray').hidden = selected.length === 0;
+    $('#compare-count').textContent = selected.length;
+    $('#compare-names').textContent = selected.length ? selected.map(tool => tool.name).join(' · ') : '비교할 AI를 2개 이상 선택하세요.';
+    $('#compare-open').disabled = selected.length < 2;
+  }
+
+  function toggleCompare(id) {
+    if (state.compare.has(id)) {
+      state.compare.delete(id);
+    } else {
+      if (state.compare.size >= 3) { showToast('AI는 최대 3개까지 비교할 수 있어요.'); return; }
+      state.compare.add(id);
+    }
+    renderRecommendations(); renderDirectory(); renderCompareTray();
+  }
+
+  function clearCompare() {
+    state.compare.clear();
+    renderRecommendations(); renderDirectory(); renderCompareTray();
+  }
+
+  function easeLabel(value) {
+    if (value >= 5) return '매우 쉬움';
+    if (value >= 4) return '쉬움';
+    if (value >= 3) return '보통';
+    return '어려움';
+  }
+
+  function openCompare() {
+    const selected = state.tools.filter(tool => state.compare.has(tool.id));
+    if (selected.length < 2) { showToast('비교할 AI를 2개 이상 선택해 주세요.'); return; }
+    const cells = mapper => selected.map(mapper).join('');
+    $('#modal').classList.add('compare-open');
+    $('#modal-title').textContent = 'AI 도구 비교';
+    $('#modal-kicker').textContent = `${selected.length}개 도구 한눈에 비교`;
+    $('#modal-body').innerHTML = `<div class="compare-table-wrap"><table class="compare-table">
+      <tr><th>도구</th>${cells(tool => `<td><div class="compare-name">${escapeHtml(tool.name)}</div><small>${escapeHtml(tool.maker)}</small></td>`)}</tr>
+      <tr><th>가격</th>${cells(tool => `<td>${escapeHtml(tool.price)}</td>`)}</tr>
+      <tr><th>한국어</th>${cells(tool => `<td>${'★'.repeat(tool.korean)}${'☆'.repeat(5 - tool.korean)}</td>`)}</tr>
+      <tr><th>품질</th>${cells(tool => `<td>${'★'.repeat(tool.quality)}${'☆'.repeat(5 - tool.quality)}</td>`)}</tr>
+      <tr><th>초보 난이도</th>${cells(tool => `<td>${easeLabel(tool.ease)}</td>`)}</tr>
+      <tr><th>추천 작업</th>${cells(tool => `<td>${escapeHtml(tool.bestFor.join(' · '))}</td>`)}</tr>
+      <tr><th>핵심 장점</th>${cells(tool => `<td>${escapeHtml(tool.strengths.join(' · '))}</td>`)}</tr>
+      <tr><th>바로가기</th>${cells(tool => `<td><a href="${escapeHtml(tool.officialUrl)}" target="_blank" rel="noreferrer">공식 사이트 →</a></td>`)}</tr>
+    </table></div>`;
+    $('#modal').classList.add('open');
+  }
+
+  function bindCompare() {
+    $('#compare-open').addEventListener('click', openCompare);
+    $('#compare-clear').addEventListener('click', clearCompare);
+    renderCompareTray();
+  }
+
   function bindCardActions() {
-    $$('[data-save]').forEach(button => {
+    $('[data-compare]').forEach(button => {
+      if (button.dataset.bound) return;
+      button.dataset.bound = 'true';
+      button.addEventListener('click', event => { event.stopPropagation(); toggleCompare(button.dataset.compare); });
+    });
+    $('[data-save]').forEach(button => {
       if (button.dataset.bound) return;
       button.dataset.bound = 'true';
       button.addEventListener('click', event => { event.stopPropagation(); toggleSave(button.dataset.save, button); });
@@ -419,6 +483,6 @@
   }
 
   renderRecommendations(); renderDirectory(); renderNews();
-  bindNavigation(); bindSearch(); bindFilters(); bindModal(); bindAuth(); bindAdmin();
+  bindNavigation(); bindSearch(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin();
   initBackend();
 })();
