@@ -258,7 +258,10 @@
     if (!supabaseClient) return;
     try {
       const toolResponse = await supabaseClient.from('tools').select('*').eq('is_published', true).order('name');
-      if (!toolResponse.error && toolResponse.data?.length) state.tools = toolResponse.data.map(mapTool);
+      if (!toolResponse.error && toolResponse.data?.length) {
+        const remoteTools = toolResponse.data.map(mapTool);
+        state.tools = [...remoteTools, ...localTools.filter(local => !remoteTools.some(remote => String(remote.id) === String(local.id)))];
+      }
       const newsResponse = await supabaseClient.from('news').select('*').eq('status', 'published').order('published_at', { ascending: false }).limit(20);
       if (!newsResponse.error && newsResponse.data?.length) { state.news = newsResponse.data.map(mapNews); state.remoteNews = true; }
     } catch (error) {
