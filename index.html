@@ -146,6 +146,23 @@
     .panel-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px; }
     .panel-title { margin: 0; font-size: 16px; font-weight: 850; letter-spacing: -.04em; }
     .panel-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+    .workflow-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 3px; }
+    .workflow-tab { flex: 0 0 auto; padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--muted); font-size: 13px; font-weight: 750; }
+    .workflow-tab.active { border-color: #8d83ff; background: #eeeaff; color: #5144c6; }
+    .workflow-card { padding: 22px; border: 1px solid #ddd9ff; border-radius: var(--radius); background: linear-gradient(135deg, #fbfaff, #f5f8ff); }
+    .workflow-summary { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 18px; }
+    .workflow-summary h3 { margin: 0 0 6px; font-size: 18px; letter-spacing: -.04em; }
+    .workflow-summary p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .workflow-time { flex: 0 0 auto; padding: 7px 10px; border-radius: 999px; background: #fff; color: #6155cd; font-size: 12px; font-weight: 800; }
+    .workflow-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .workflow-step { position: relative; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; text-align: left; }
+    .workflow-step:not(:last-child)::after { content: '→'; position: absolute; right: -19px; top: 50%; z-index: 2; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #7165df; color: #fff; font-weight: 900; transform: translateY(-50%); }
+    .workflow-number { color: #766ae3; font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+    .workflow-tool { display: block; margin: 8px 0 5px; color: var(--ink); font-size: 15px; font-weight: 850; }
+    .workflow-role { display: block; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .workflow-step:hover { border-color: #9b92ea; transform: translateY(-2px); }
+    .workflow-tip { margin: 14px 0 0; color: #59636e; font-size: 12px; line-height: 1.6; }
+    .workflow-tip strong { color: #5144c6; }
     .use-case-list { display: grid; gap: 10px; }
     .use-case { display: flex; align-items: center; gap: 13px; padding: 12px 13px; border-radius: 13px; background: #f8fafc; }
     .use-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #edf2ff; font-size: 16px; }
@@ -271,6 +288,10 @@
       .filter-select { width: 100%; min-width: 0; }
       .filter-reset { flex: 1; }
       .filter-result { margin-left: 0; text-align: right; }
+      .workflow-summary { display: block; }
+      .workflow-time { display: inline-block; margin-top: 10px; }
+      .workflow-steps { grid-template-columns: 1fr; }
+      .workflow-step:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -19px; transform: translateX(50%); }
       .recommend-grid, .dashboard-grid, .admin-grid { grid-template-columns: 1fr; }
       .recommend-card:last-child { grid-column: auto; }
       .section { margin-top: 30px; }
@@ -332,6 +353,12 @@
           <div class="section-heading"><div><h2>나를 위한 AI 추천</h2><p id="recommend-caption">콘텐츠 제작에 자주 쓰이는 도구를 골라봤어요.</p></div><button class="link-btn" data-scroll="directory">전체 도구 보기&nbsp; →</button></div>
           <div class="recommend-grid" id="recommend-grid" aria-live="polite"></div>
           <div class="empty" id="empty-recommend">입력한 작업에 꼭 맞는 도구를 찾는 중이에요. 아래 AI 도구 탐색에서 분야를 바꿔보세요.</div>
+        </section>
+
+        <section class="section" id="workflows">
+          <div class="section-heading"><div><h2>목적별 AI 조합</h2><p>AI 하나만 고르지 말고, 가장 쉬운 작업 순서로 연결해 보세요.</p></div></div>
+          <div class="workflow-tabs" id="workflow-tabs" role="tablist" aria-label="목적 선택"></div>
+          <div id="workflow-result" aria-live="polite"></div>
         </section>
 
         <section class="section" id="insight">
