@@ -167,6 +167,13 @@
     .directory-tools { display: flex; gap: 7px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 2px; }
     .filter-btn { padding: 8px 13px; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 99px; font-size: 11px; font-weight: 800; white-space: nowrap; }
     .filter-btn.active, .filter-btn:hover { color: var(--blue); border-color: #bfcaff; background: var(--blue-soft); }
+    .advanced-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin: -6px 0 18px; padding: 14px; background: #fff; border: 1px solid var(--line); border-radius: 14px; }
+    .filter-field { display: grid; gap: 6px; min-width: 150px; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .filter-select { min-width: 150px; padding: 9px 32px 9px 10px; color: var(--ink); background: #f8fafc; border: 1px solid #dfe5eb; border-radius: 9px; outline: none; font-size: 11px; font-weight: 750; }
+    .filter-select:focus { border-color: #aebeff; box-shadow: 0 0 0 3px #eef2ff; }
+    .filter-reset { padding: 10px 12px; color: var(--blue); background: var(--blue-soft); border-radius: 9px; font-size: 10px; font-weight: 850; }
+    .filter-result { margin-left: auto; padding: 9px 2px; color: var(--muted); font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .filter-result strong { color: var(--blue); font-size: 14px; }
     .empty { display: none; padding: 35px; color: var(--muted); text-align: center; background: #fff; border: 1px dashed #d9e0e7; border-radius: var(--radius); font-size: 13px; }
     .demo-badge { display: inline-flex; margin-left: 7px; padding: 4px 7px; color: #a77722; background: #fff8df; border-radius: 5px; font-size: 9px; font-weight: 800; vertical-align: middle; }
     .modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 20px; background: rgba(19, 38, 63, .45); opacity: 0; pointer-events: none; transition: .2s; }
@@ -239,6 +246,11 @@
       .search-submit { padding: 10px 12px; }
       .quick-searches { gap: 6px; }
       .quick-chip { font-size: 10px; }
+      .advanced-filters { align-items: stretch; padding: 12px; }
+      .filter-field { min-width: calc(50% - 5px); flex: 1; }
+      .filter-select { width: 100%; min-width: 0; }
+      .filter-reset { flex: 1; }
+      .filter-result { margin-left: 0; text-align: right; }
       .recommend-grid, .dashboard-grid, .admin-grid { grid-template-columns: 1fr; }
       .recommend-card:last-child { grid-column: auto; }
       .section { margin-top: 30px; }
@@ -309,6 +321,16 @@
         <section class="section" id="directory">
           <div class="section-heading"><div><h2>AI 도구 탐색</h2><p>목적별로 검증된 AI를 찾아보세요.</p></div><button class="link-btn" data-toast="도구 제보 기능을 준비 중입니다." hidden>도구 제보&nbsp; +</button></div>
           <div class="directory-tools" role="tablist"><button class="filter-btn active" data-filter="all">전체</button><button class="filter-btn" data-filter="writing">글쓰기·문서</button><button class="filter-btn" data-filter="image">이미지·디자인</button><button class="filter-btn" data-filter="video">영상</button><button class="filter-btn" data-filter="research">검색·리서치</button><button class="filter-btn" data-filter="coding">코딩</button></div>
+          <div class="advanced-filters" aria-label="AI 도구 상세 필터">
+            <label class="filter-field">요금
+              <select class="filter-select" id="price-filter"><option value="all">전체 요금</option><option value="free">무료 사용 가능</option><option value="paid">유료 중심</option></select>
+            </label>
+            <label class="filter-field">한국어 수준
+              <select class="filter-select" id="korean-filter"><option value="all">전체</option><option value="4">한국어 우수 · 4점 이상</option><option value="5">한국어 최고 · 5점</option></select>
+            </label>
+            <button class="filter-reset" id="filter-reset" type="button">필터 초기화</button>
+            <div class="filter-result"><strong id="filter-count">0</strong>개 도구</div>
+          </div>
           <div class="recommend-grid" id="directory-grid" aria-live="polite"></div>
           <div class="empty" id="empty-directory">이 분야에는 아직 등록된 도구가 없어요.</div>
         </section>
