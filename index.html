@@ -235,7 +235,16 @@
     .match-bar { overflow: hidden; flex: 1; height: 6px; background: #edf0f3; border-radius: 99px; }
     .match-bar i { display: block; height: 100%; background: var(--blue); border-radius: inherit; }
     .match-score { color: var(--blue); font-size: 12px; font-weight: 900; }
-    .recommend-reason { min-height: 41px; color: #5e6b77; font-size: 12px; line-height: 1.65; }
+    .recommend-reason { min-height: 41px; color: #5e6b77; font-size: 11px; line-height: 1.55; }
+    .recommend-reason strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 10px; }
+    .recommend-reason ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+    .recommend-reason li { position: relative; padding-left: 13px; }
+    .recommend-reason li::before { content: '✓'; position: absolute; left: 0; color: #17845d; font-weight: 900; }
+    .recommend-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 13px; padding: 11px; border: 1px solid #e5e9ed; border-radius: 10px; background: #fafbfc; }
+    .recommend-facts div { min-width: 0; }
+    .recommend-facts span { display: block; margin-bottom: 3px; color: var(--muted); font-size: 8px; font-weight: 750; }
+    .recommend-facts strong { display: block; overflow: hidden; color: var(--ink); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .recommend-facts p { grid-column: 1 / -1; margin: 1px 0 0; color: #667487; font-size: 9px; line-height: 1.45; }
     .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; }
     .tag { padding: 5px 8px; color: #667487; background: #f4f6f8; border-radius: 6px; font-size: 10px; font-weight: 800; }
     .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #f0f2f4; }
