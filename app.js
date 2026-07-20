@@ -285,14 +285,14 @@
   }
 
   function bindFilters() {
-    $('.filter-btn').forEach(button => button.addEventListener('click', () => {
-      $('.filter-btn').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.category = button.dataset.filter; renderDirectory();
+    $$('[data-filter]').forEach(button => button.addEventListener('click', () => {
+      $$('[data-filter]').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.category = button.dataset.filter; renderDirectory();
     }));
     $('#price-filter').addEventListener('change', event => { state.priceFilter = event.target.value; renderDirectory(); });
     $('#korean-filter').addEventListener('change', event => { state.koreanFilter = event.target.value; renderDirectory(); });
     $('#filter-reset').addEventListener('click', () => {
       state.category = 'all'; state.priceFilter = 'all'; state.koreanFilter = 'all';
-      $('.filter-btn').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+      $$('[data-filter]').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
       $('#price-filter').value = 'all'; $('#korean-filter').value = 'all';
       renderDirectory(); showToast('필터를 초기화했어요.');
     });
