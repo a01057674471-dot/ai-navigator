@@ -24,7 +24,11 @@
     newsExpanded: false,
     newsQuery: '',
     newsCategory: 'all',
-    templateCategory: 'all'
+    templateCategory: 'all',
+    popularity: new Map(),
+    popularityLive: false,
+    popularityFilter: 'all',
+    localPopularity: JSON.parse(localStorage.getItem('ai-navigator-popularity') || '{}')
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -48,6 +52,12 @@
 
   function scrollToId(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   function saveLocalState() { localStorage.setItem('ai-navigator-saved', JSON.stringify([...state.saved])); }
+  function saveLocalPopularity() { localStorage.setItem('ai-navigator-popularity', JSON.stringify(state.localPopularity)); }
+  function visitorId() {
+    let id = localStorage.getItem('ai-navigator-visitor');
+    if (!id) { id = crypto.randomUUID?.() || `visitor-${Date.now()}-${Math.random().toString(36).slice(2)}`; localStorage.setItem('ai-navigator-visitor', id); }
+    return id;
+  }
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
   }
@@ -324,6 +334,76 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     }));
   }
 
+  function popularityScore(tool) {
+    const remote = state.popularity.get(String(tool.id));
+    if (state.popularityLive && remote) return Number(remote.score) || 0;
+    const local = state.localPopularity[tool.id] || {};
+    return (Number(local.views) || 0) + (Number(local.saves) || 0) * 3 + (Number(local.compares) || 0) * 2;
+  }
+
+  function renderPopularity() {
+    let tools = [...state.tools];
+    if (state.popularityFilter === 'free') tools = tools.filter(tool => tool.priceType === 'free' || tool.priceType === 'freemium');
+    if (state.popularityFilter === 'korean') tools = tools.filter(tool => Number(tool.korean) >= 4);
+    if (state.popularityFilter === 'beginner') tools = tools.filter(tool => Number(tool.ease) >= 4);
+    tools.sort((a, b) => popularityScore(b) - popularityScore(a) || b.quality - a.quality || b.costFit - a.costFit);
+    const ranked = tools.slice(0, 5);
+    $('#popularity-status').textContent = state.popularityLive ? '최근 30일 실제 이용 데이터' : '추천 순위 · 이용 데이터 수집 준비 중';
+    $('#popularity-status').classList.toggle('live', state.popularityLive);
+    $('#popularity-caption').textContent = state.popularityLive
+      ? '상세 조회·저장·비교 선택을 개인정보 없이 합산했어요.'
+      : '실시간 집계가 연결되면 사용자가 실제로 많이 찾은 순위로 자동 전환돼요.';
+    $('#popularity-list').innerHTML = ranked.map((tool, index) => {
+      const stats = state.popularity.get(String(tool.id)) || {};
+      const local = state.localPopularity[tool.id] || {};
+      const views = state.popularityLive ? Number(stats.views) || 0 : Number(local.views) || 0;
+      const saves = state.popularityLive ? Number(stats.saves) || 0 : Number(local.saves) || 0;
+      const compares = state.popularityLive ? Number(stats.compares) || 0 : Number(local.compares) || 0;
+      return `<article class="popularity-row">
+        <span class="popularity-rank ${index < 3 ? 'top' : ''}">${index + 1}</span>
+        <div class="tool-logo ${escapeHtml(tool.logoClass)}">${escapeHtml(tool.logo)}</div>
+        <div class="popularity-copy"><strong>${escapeHtml(tool.name)}</strong><small>${escapeHtml(tool.bestFor.slice(0, 2).join(' · '))}</small></div>
+        <div class="popularity-metrics">${state.popularityLive || popularityScore(tool) > 0 ? `<span>조회 ${views}</span><span>저장 ${saves}</span><span>비교 ${compares}</span>` : '<span>데이터 수집 전</span>'}</div>
+        <button class="detail-btn" type="button" data-detail="${escapeHtml(tool.id)}">상세 보기</button>
+      </article>`;
+    }).join('');
+    bindCardActions();
+  }
+
+  async function loadPopularity() {
+    if (!supabaseClient) { renderPopularity(); return; }
+    try {
+      const { data, error } = await supabaseClient.rpc('get_tool_popularity');
+      if (error) throw error;
+      state.popularity = new Map((data || []).map(row => [String(row.tool_id), row]));
+      state.popularityLive = true;
+    } catch (error) {
+      state.popularityLive = false;
+    }
+    renderPopularity();
+  }
+
+  async function recordToolEvent(toolId, eventType) {
+    const key = String(toolId);
+    const metric = eventType === 'view' ? 'views' : eventType === 'save' ? 'saves' : 'compares';
+    state.localPopularity[key] = state.localPopularity[key] || { views: 0, saves: 0, compares: 0 };
+    state.localPopularity[key][metric] = (Number(state.localPopularity[key][metric]) || 0) + 1;
+    saveLocalPopularity();
+    renderPopularity();
+    if (!supabaseClient) return;
+    try {
+      await supabaseClient.rpc('record_tool_event', { p_tool_id: key, p_event_type: eventType, p_visitor_id: visitorId() });
+    } catch (error) { /* 로컬 집계는 유지합니다. */ }
+  }
+
+  function bindPopularity() {
+    $$('[data-popularity-filter]').forEach(button => button.addEventListener('click', () => {
+      state.popularityFilter = button.dataset.popularityFilter;
+      $$('[data-popularity-filter]').forEach(item => item.classList.toggle('active', item === button));
+      renderPopularity();
+    }));
+  }
+
   function renderSaved() {
     const savedTools = state.tools.filter(tool => state.saved.has(tool.id));
     $('#saved-grid').innerHTML = savedTools.map((tool, index) => toolCard(tool, index)).join('');
@@ -589,6 +669,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
       <section class="tool-detail-section"><h4>바로 써보는 실전 프롬프트</h4><div class="prompt-box"><button class="prompt-copy-btn" type="button" data-copy-prompt>프롬프트 복사</button><pre>${escapeHtml(prompt)}</pre></div><p class="prompt-help">[대괄호] 안의 내용만 내 상황에 맞게 바꿔서 사용하세요.</p></section>
       <div class="tool-detail-footer"><span class="tool-detail-verified">최근 검증: ${escapeHtml(tool.verifiedAt || '검증일 미정')} · 가격과 기능은 변경될 수 있습니다.</span>${officialLink}</div>`;
     $('#modal').classList.add('open');
+    recordToolEvent(tool.id, 'view');
     $('[data-copy-prompt]')?.addEventListener('click', () => copyPrompt(prompt));
   }
 
@@ -596,6 +677,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     const saving = !state.saved.has(id);
     if (saving) state.saved.add(id); else state.saved.delete(id);
     saveLocalState();
+    if (saving) recordToolEvent(id, 'save');
     if (state.connected && state.user) {
       try {
         if (saving) {
@@ -632,6 +714,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     } else {
       if (state.compare.size >= 3) { showToast('AI는 최대 3개까지 비교할 수 있어요.'); return; }
       state.compare.add(id);
+      recordToolEvent(id, 'compare');
     }
     renderRecommendations(); renderDirectory(); renderSaved(); renderCompareTray();
     if (!$('#compare-page').hidden) renderComparePage();
@@ -826,7 +909,8 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     } catch (error) {
       showToast('원격 데이터를 불러오지 못해 데모 데이터로 표시합니다.');
     }
-    renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderNews();
+    renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderPopularity(); renderNews();
+    await loadPopularity();
   }
 
   async function applySession(session) {
@@ -977,7 +1061,7 @@ PDF에 없는 내용은 추측하지 말고 '자료에서 확인되지 않음'�
     supabaseClient.auth.onAuthStateChange((_event, session) => { setTimeout(() => applySession(session), 0); });
   }
 
-  renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderNews();
-  bindNavigation(); bindSearch(); bindDiagnosis(); bindTemplates(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
+  renderRecommendations(); renderDirectory(); renderSaved(); renderWorkflow(); renderTemplates(); renderPopularity(); renderNews();
+  bindNavigation(); bindSearch(); bindDiagnosis(); bindTemplates(); bindPopularity(); bindFilters(); bindModal(); bindCompare(); bindAuth(); bindAdmin(); bindNewsExplorer();
   initBackend();
 })();
