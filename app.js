@@ -180,6 +180,108 @@
     return `<ul class="tool-detail-list ${className}">${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
   }
 
+  function starterPrompt(tool) {
+    const prompts = {
+      general: `당신은 실무 전문 AI입니다.
+목표: [완성하고 싶은 결과]
+대상: [누가 볼 것인지]
+조건: [분량·톤·반드시 포함할 내용]
+제외: 추측, 과장, 확인되지 않은 정보
+먼저 필요한 정보를 3개만 질문한 뒤, 바로 사용할 수 있는 완성본과 개선안 2가지를 제시해 주세요.`,
+      research: `다음 주제를 조사해 주세요: [조사 주제]
+목적: [조사 결과를 사용할 곳]
+기간과 범위: [예: 최근 1년, 한국 시장]
+반드시 출처 링크와 발표일을 표시하고, 확인된 사실과 추론을 구분해 주세요.
+마지막에 핵심 결론 5개, 반대 근거, 추가 확인이 필요한 항목을 정리해 주세요.`,
+      document: `첨부한 자료만 근거로 다음 작업을 수행해 주세요.
+목적: [요약/강의안/회의록/질의응답]
+대상: [독자 또는 청중]
+분량: [원하는 길이]
+결과를 핵심 요약, 중요 근거, 실행할 일, 확인이 필요한 내용 순서로 정리하고 자료에 없는 내용은 만들어내지 마세요.`,
+      image: `[주제와 인물]을 중심으로 [사용 목적] 이미지를 만들어 주세요.
+스타일: [실사/일러스트/미니멀]
+구도: [클로즈업/전신/제품 중심]
+조명과 색감: [원하는 분위기]
+비율: [1:1/9:16/16:9]
+유지할 요소: [얼굴·의상·로고 등]
+제외: 글자 깨짐, 왜곡된 손, 과도한 보정, 불필요한 배경 요소`,
+      video: `[주제 또는 첨부 이미지]로 [길이]초 영상을 만들어 주세요.
+장면: [인물과 행동]
+카메라: [고정/천천히 줌/좌우 이동]
+분위기: [시네마틱/밝고 경쾌함/자연스러움]
+비율: 세로 9:16
+유지: 얼굴, 의상, 배경의 일관성
+제외: 갑작스러운 장면 전환, 인물 왜곡, 손가락 오류, 화면 속 임의의 글자`,
+      avatar: `다음 내용을 자연스럽게 설명하는 AI 발표 영상을 만들어 주세요.
+대본: [발표 내용]
+발표자: [연령대·성별·분위기]
+언어와 말투: 한국어, 또렷하고 친근하게
+화면 비율: [9:16/16:9]
+자막: 핵심 문장만 간결하게
+입 모양과 음성을 자연스럽게 맞추고 과장된 표정은 제외해 주세요.`,
+      coding: `다음 기능을 구현해 주세요: [원하는 기능]
+환경: [사용 언어·프레임워크]
+현재 상태: [기존 코드 또는 오류]
+완료 조건: [사용자가 할 수 있어야 하는 행동]
+기존 기능을 깨뜨리지 말고, 먼저 원인을 설명한 뒤 최소한의 변경으로 구현해 주세요.
+수정 파일과 테스트 방법, 예상되는 부작용도 함께 알려 주세요.`,
+      automation: `다음 반복 업무를 자동화하고 싶습니다: [현재 반복 업무]
+입력: [어디에서 어떤 데이터가 들어오는지]
+처리: [분류·요약·변환 등]
+출력: [어디에 무엇을 저장하거나 전송할지]
+실패 시 처리 방법과 개인정보 보호 조건까지 포함해 가장 단순한 워크플로부터 설계해 주세요.`,
+      voice: `다음 대본을 자연스러운 한국어 음성으로 만들어 주세요.
+용도: [광고/강의/묵상/영상 내레이션]
+목소리: [연령대·성별·분위기]
+속도: [느리게/보통/빠르게]
+감정: [차분함/설렘/신뢰감]
+강조할 문장: [문장]
+과장된 연기와 부자연스러운 호흡은 제외해 주세요.`,
+      music: `다음 조건으로 음악을 만들어 주세요.
+용도: [영상 BGM/노래/행사]
+장르: [장르]
+분위기: [감정]
+템포: [느림/보통/빠름]
+악기: [원하는 악기]
+보컬과 가사: [있음/없음, 주제]
+길이: [시간]
+기존 곡이나 가수의 목소리를 그대로 모방하지 말고 독창적으로 구성해 주세요.`,
+      presentation: `다음 주제로 발표자료를 만들어 주세요: [주제]
+청중: [대상]
+발표 시간: [분]
+목표: [설득/교육/보고]
+총 [장수]장으로 구성하고, 각 장에는 핵심 메시지 하나와 짧은 근거만 넣어 주세요.
+표지, 문제, 핵심 내용, 사례, 실행안, 결론 순서로 구성하고 시각자료 제안도 포함해 주세요.`
+    };
+    const id = String(tool.id);
+    const groups = {
+      document: ['notebooklm', 'notion-ai'],
+      research: ['perplexity', 'genspark', 'grok'],
+      image: ['firefly', 'midjourney', 'ideogram', 'leonardo-ai', 'recraft'],
+      video: ['runway', 'kling-ai', 'google-veo', 'pika', 'luma-dream-machine', 'capcut'],
+      avatar: ['heygen'],
+      coding: ['cursor', 'github-copilot', 'replit', 'lovable', 'bolt-new'],
+      automation: ['zapier-ai', 'n8n'],
+      voice: ['elevenlabs'],
+      music: ['suno'],
+      presentation: ['gamma', 'canva']
+    };
+    const group = Object.entries(groups).find(([, ids]) => ids.includes(id))?.[0] || 'general';
+    return prompts[group];
+  }
+
+  async function copyPrompt(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('프롬프트를 복사했어요.');
+    } catch (error) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text; textarea.style.position = 'fixed'; textarea.style.opacity = '0';
+      document.body.appendChild(textarea); textarea.select(); document.execCommand('copy'); textarea.remove();
+      showToast('프롬프트를 복사했어요.');
+    }
+  }
+
   function openTool(tool) {
     $('#modal').classList.remove('compare-open');
     $('#modal-title').textContent = tool.name;
@@ -189,6 +291,7 @@
     const officialLink = tool.officialUrl && tool.officialUrl !== '#'
       ? `<a class="tool-detail-link" href="${escapeHtml(tool.officialUrl)}" target="_blank" rel="noreferrer">공식 사이트 열기 →</a>`
       : '';
+    const prompt = starterPrompt(tool);
     $('#modal-body').innerHTML = `
       <p class="tool-detail-intro">${escapeHtml(tool.description || tool.reason)}</p>
       <div class="tool-detail-grid">
@@ -200,8 +303,10 @@
       <section class="tool-detail-section"><h4>이런 작업에 추천</h4>${detailList(bestFor, 'positive')}</section>
       <section class="tool-detail-section"><h4>핵심 장점</h4>${detailList(strengths, 'positive')}</section>
       <section class="tool-detail-section"><h4>사용 전 확인할 점</h4>${detailList(toolLimitations(tool), 'caution')}</section>
+      <section class="tool-detail-section"><h4>바로 써보는 실전 프롬프트</h4><div class="prompt-box"><button class="prompt-copy-btn" type="button" data-copy-prompt>프롬프트 복사</button><pre>${escapeHtml(prompt)}</pre></div><p class="prompt-help">[대괄호] 안의 내용만 내 상황에 맞게 바꿔서 사용하세요.</p></section>
       <div class="tool-detail-footer"><span class="tool-detail-verified">최근 검증: ${escapeHtml(tool.verifiedAt || '검증일 미정')} · 가격과 기능은 변경될 수 있습니다.</span>${officialLink}</div>`;
     $('#modal').classList.add('open');
+    $('[data-copy-prompt]')?.addEventListener('click', () => copyPrompt(prompt));
   }
 
   async function toggleSave(id, button) {
