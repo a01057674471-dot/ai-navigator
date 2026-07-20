@@ -178,6 +178,33 @@
     .diagnosis-result-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
     .diagnosis-result-heading h3 { margin: 7px 0 5px; font-size: 19px; }
     .diagnosis-result-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+    .compare-page { scroll-margin-top: 20px; padding: 24px; border: 1px solid #dcd7ff; border-radius: var(--radius); background: linear-gradient(135deg, #fbfaff, #f5f8ff); }
+    .compare-page[hidden] { display: none; }
+    .compare-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    .compare-page-heading h2 { margin: 8px 0 5px; font-size: 24px; letter-spacing: -.045em; }
+    .compare-page-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+    .compare-page-actions { display: flex; gap: 7px; }
+    .compare-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+    .compare-product-card { position: relative; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 3px 10px; padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .compare-product-card .tool-logo { grid-row: 1 / 4; }
+    .compare-product-card h3 { margin: 0; font-size: 14px; }
+    .compare-product-card p { margin: 0; color: var(--muted); font-size: 10px; }
+    .compare-product-card .price { margin-top: 4px; }
+    .compare-product-card .detail-btn { grid-column: 1 / -1; margin-top: 9px; }
+    .compare-remove { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: #f1f3f5; color: #7a8590; font-size: 15px; }
+    .compare-verdict-wrap { margin-bottom: 18px; }
+    .compare-verdict-wrap > h3 { margin: 0 0 10px; font-size: 15px; }
+    .compare-verdicts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .compare-verdicts article { padding: 13px; border: 1px solid #e1ddff; border-radius: 11px; background: #fff; }
+    .compare-verdicts span { display: block; color: var(--muted); font-size: 10px; font-weight: 750; }
+    .compare-verdicts strong { display: block; margin-top: 6px; color: #5144c6; font-size: 13px; }
+    .compare-verdicts p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .compare-page-table { border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .compare-table.dedicated th { position: sticky; left: 0; z-index: 1; }
+    .compare-table.dedicated td { min-width: 180px; line-height: 1.6; }
+    .compare-sub { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .compare-stars { color: #f4a72b; letter-spacing: 1px; }
+    .compare-caution { margin: 11px 0 0; color: var(--muted); font-size: 10px; }
     .template-count { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: #fff3d7; color: #8a5a00; font-size: 11px; font-weight: 850; }
     .template-filters { display: flex; gap: 7px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 3px; }
     .template-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
@@ -344,6 +371,12 @@
       .filter-select { width: 100%; min-width: 0; }
       .filter-reset { flex: 1; }
       .filter-result { margin-left: 0; text-align: right; }
+      .compare-page { padding: 18px; }
+      .compare-page-heading { align-items: stretch; flex-direction: column; }
+      .compare-page-actions { width: 100%; }
+      .compare-page-actions button { flex: 1; }
+      .compare-product-grid { grid-template-columns: 1fr; }
+      .compare-verdicts { grid-template-columns: 1fr 1fr; }
       .template-grid { grid-template-columns: 1fr 1fr; }
       .diagnosis-grid { grid-template-columns: 1fr 1fr; }
       .diagnosis-field:first-child { grid-column: 1 / -1; }
@@ -469,6 +502,17 @@
           <div class="template-grid" id="template-grid" aria-live="polite"></div>
         </section>
 
+        <section class="section compare-page" id="compare-page" hidden>
+          <div class="compare-page-heading">
+            <div><span class="eyebrow"><i></i> SIDE-BY-SIDE COMPARISON</span><h2>AI 도구 전용 비교</h2><p><strong id="compare-page-count">0</strong>개 도구를 같은 기준으로 비교했어요.</p></div>
+            <div class="compare-page-actions"><button class="secondary-btn" id="compare-page-reset" type="button">선택 초기화</button><button class="link-btn" id="compare-page-close" type="button">비교 닫기</button></div>
+          </div>
+          <div class="compare-product-grid" id="compare-page-cards"></div>
+          <div class="compare-verdict-wrap"><h3>조건별 추천 결론</h3><div class="compare-verdicts" id="compare-verdicts"></div></div>
+          <div class="compare-table-wrap compare-page-table" id="compare-page-table"></div>
+          <p class="compare-caution">가격과 무료 제공 범위는 변경될 수 있으므로 결제 전 공식 사이트에서 다시 확인하세요.</p>
+        </section>
+
         <section class="section" id="saved">
           <div class="section-heading saved-heading">
             <div><h2>저장한 AI</h2><p id="saved-caption">저장한 도구를 한곳에서 다시 확인하세요.</p></div>
@@ -560,7 +604,7 @@
   <nav class="mobile-nav"><button class="active" data-scroll="top"><span>⌂</span>홈</button><button data-scroll="recommend"><span>✦</span>추천</button><button data-scroll="directory"><span>▦</span>탐색</button><button data-scroll="news"><span>◌</span>뉴스</button></nav>
   <div class="compare-tray" id="compare-tray" hidden>
     <div class="compare-tray-copy"><strong><span id="compare-count">0</span>/3개 선택</strong><small id="compare-names">비교할 AI를 2개 이상 선택하세요.</small></div>
-    <div class="compare-tray-actions"><button class="compare-clear-btn" id="compare-clear" type="button">초기화</button><button class="compare-open-btn" id="compare-open" type="button" disabled>비교하기</button></div>
+    <div class="compare-tray-actions"><button class="compare-clear-btn" id="compare-clear" type="button">초기화</button><button class="compare-open-btn" id="compare-open" type="button" disabled>전용 비교 보기</button></div>
   </div>
   <div class="toast" id="toast" role="status"></div>
   <div class="modal" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
