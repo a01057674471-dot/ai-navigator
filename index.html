@@ -184,6 +184,24 @@
     .news-meta time { color: #a4adb5; font-weight: 600; }
     .news-title { margin: 0; font-size: 13px; line-height: 1.5; font-weight: 780; }
     .news-summary { overflow: hidden; display: -webkit-box; margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+    .news-archive { scroll-margin-top: 24px; margin-top: 18px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+    .news-archive[hidden] { display: none; }
+    .news-archive-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 15px; }
+    .news-archive-heading h3 { margin: 0 0 5px; font-size: 18px; }
+    .news-archive-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+    .news-result { flex: 0 0 auto; padding: 8px 11px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 11px; font-weight: 800; }
+    .news-result strong { font-size: 14px; }
+    .news-controls { display: flex; gap: 9px; margin-bottom: 17px; }
+    .news-search-wrap { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 180px; padding: 0 11px; border: 1px solid #dfe5eb; border-radius: 10px; background: #f8fafc; color: #8c98a3; }
+    .news-search-wrap:focus-within { border-color: #aebeff; box-shadow: 0 0 0 3px #eef2ff; }
+    .news-search-wrap input { width: 100%; padding: 10px 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
+    .news-archive-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .news-archive-card { padding: 16px; border: 1px solid #e8ebef; border-radius: 13px; background: #fbfcfd; }
+    .news-archive-card:last-child { border-bottom: 1px solid #e8ebef; }
+    .news-archive-card:hover { border-color: #bdc8ff; background: #f7f8ff; transform: translateY(-2px); }
+    .news-archive-card .news-title { font-size: 14px; }
+    .news-archive-card .news-summary { -webkit-line-clamp: 2; min-height: 32px; }
+    .news-read { display: inline-block; margin-top: 11px; color: var(--blue); font-size: 11px; font-weight: 800; }
     .insight-banner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 23px 26px; color: var(--navy); background: var(--lime); border-radius: var(--radius); }
     .insight-banner h3 { margin: 0; font-size: 16px; letter-spacing: -.05em; }
     .insight-banner p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; }
@@ -299,6 +317,10 @@
       .workflow-time { display: inline-block; margin-top: 10px; }
       .workflow-steps { grid-template-columns: 1fr; }
       .workflow-step:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -19px; transform: translateX(50%); }
+      .news-controls { flex-wrap: wrap; }
+      .news-search-wrap { flex-basis: 100%; }
+      .news-archive-grid { grid-template-columns: 1fr; }
+      .news-archive-heading { align-items: flex-start; }
       .recommend-grid, .dashboard-grid, .admin-grid { grid-template-columns: 1fr; }
       .recommend-card:last-child { grid-column: auto; }
       .section { margin-top: 30px; }
@@ -404,10 +426,30 @@
         </section>
 
         <section class="section" id="news">
-          <div class="section-heading"><div><h2>AI 뉴스 · 인사이트</h2><p>오늘 알아두면 좋은 소식만 짧고 쉽게 정리했어요.</p></div><button class="link-btn" data-toast="뉴스 전체 보기를 준비 중입니다." hidden>전체 뉴스&nbsp; →</button></div>
+          <div class="section-heading"><div><h2>AI 뉴스 · 인사이트</h2><p>오늘 알아두면 좋은 소식만 짧고 쉽게 정리했어요.</p></div><button class="link-btn" id="news-toggle" type="button">전체 뉴스 →</button></div>
           <div class="dashboard-grid">
             <div class="panel"><div class="panel-header"><div><h3 class="panel-title">오늘의 AI 브리핑 <span class="demo-badge">데모 콘텐츠</span></h3><p class="panel-subtitle">2026. 07. 20 · 5분이면 충분해요</p></div><span style="font-size:20px">◌</span></div><div class="news-list" id="news-list"></div></div>
             <div class="panel"><div class="panel-header"><div><h3 class="panel-title">상황별 추천 바로가기</h3><p class="panel-subtitle">가장 많이 찾는 업무예요</p></div><span style="font-size:20px">✦</span></div><div class="use-case-list"><button class="use-case" data-query="회의록을 정리하고 할 일을 나누고 싶어"><span class="use-icon">📝</span><span class="use-copy"><span class="use-title">회의록 정리하기</span><span class="use-meta">요약 · 액션 아이템</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="인스타그램 콘텐츠 아이디어가 필요해"><span class="use-icon">💡</span><span class="use-copy"><span class="use-title">콘텐츠 아이디어 얻기</span><span class="use-meta">기획 · 카피 · 이미지</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="긴 PDF를 쉽게 이해하고 싶어"><span class="use-icon">📚</span><span class="use-copy"><span class="use-title">긴 문서 이해하기</span><span class="use-meta">요약 · 질문 · 번역</span></span><span class="use-arrow">›</span></button><button class="use-case" data-query="코딩 오류를 해결하고 싶어"><span class="use-icon">⌘</span><span class="use-copy"><span class="use-title">코딩 오류 해결하기</span><span class="use-meta">디버깅 · 코드 리뷰</span></span><span class="use-arrow">›</span></button></div></div>
+          </div>
+          <div class="news-archive" id="news-archive" hidden>
+            <div class="news-archive-heading">
+              <div><h3>전체 뉴스</h3><p>제목을 누르면 요약과 핵심 내용을 자세히 볼 수 있어요.</p></div>
+              <div class="news-result"><strong id="news-result-count">0</strong>개 기사</div>
+            </div>
+            <div class="news-controls">
+              <label class="news-search-wrap"><span>⌕</span><input id="news-search" type="search" placeholder="뉴스 제목이나 내용 검색" autocomplete="off" /></label>
+              <select class="filter-select" id="news-category" aria-label="뉴스 분야">
+                <option value="all">전체 분야</option>
+                <option value="insight">인사이트</option>
+                <option value="workflow">업무 활용</option>
+                <option value="guide">가이드</option>
+                <option value="model">AI 모델</option>
+                <option value="news">일반 뉴스</option>
+              </select>
+              <button class="filter-reset" id="news-reset" type="button">검색 초기화</button>
+            </div>
+            <div class="news-archive-grid" id="news-archive-grid" aria-live="polite"></div>
+            <div class="empty" id="empty-news">검색 조건에 맞는 뉴스가 없어요.</div>
           </div>
         </section>
         <section class="section" id="admin" hidden>
